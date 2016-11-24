@@ -25,11 +25,25 @@
 #include "https-common.h"
 #include "busi_cb.h"
 
+#include <uuid/uuid.h>
+
+char *get_random_uuid(char *str)
+{
+    uuid_t uuid;
+
+    uuid_generate(uuid);
+    uuid_unparse(uuid, str);
+
+    return str;
+}
+
+
+
 /* This callback gets invoked when we get any http request that doesn't match
  * any other callback.  Like any evhttp server callback, it has a simple job:
  * it must eventually call evhttp_send_error() or evhttp_send_reply().
  */
-void
+    void
 login_cb (struct evhttp_request *req, void *arg)
 { 
     struct evbuffer *evb = NULL;
@@ -43,6 +57,7 @@ login_cb (struct evhttp_request *req, void *arg)
         if (buf == NULL) return;
         evbuffer_add_printf(buf, "Requested: %s\n", uri);
         evhttp_send_reply(req, HTTP_OK, "OK", buf);
+        printf("get uri:%s\n", uri);
         return;
     }
 
@@ -77,7 +92,7 @@ login_cb (struct evhttp_request *req, void *arg)
     /*
        具体的：可以根据Post的参数执行相应操作，然后将结果输出
        ...
-    */
+     */
     //unpack json
     cJSON* root = cJSON_Parse(request_data_buf);
     cJSON* username = cJSON_GetObjectItem(root, "username");
@@ -93,7 +108,9 @@ login_cb (struct evhttp_request *req, void *arg)
     root = cJSON_CreateObject();
 
     cJSON_AddStringToObject(root, "result", "ok");
-    cJSON_AddStringToObject(root, "sessionid", "xxxxxxxx");
+    /* 生成uuid随机的 */
+    char uuid_str[UUID_STR_LEN] = {0};
+    cJSON_AddStringToObject(root, "sessionid", get_random_uuid(uuid_str));
 
     char *response_data = cJSON_Print(root);
     cJSON_Delete(root);

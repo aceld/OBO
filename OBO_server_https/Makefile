@@ -2,7 +2,7 @@
 CC=gcc
 CPPFLAGS= -I. -I./include 
 CFLAGS=-Wall 
-LIBS=-lpthread -levent -lm -lssl -lcrypto -levent_openssl
+LIBS=-lpthread -levent -lm -lssl -lcrypto -levent_openssl -luuid
 
 #找到当前目录下所有的.c文件
 src = $(wildcard *.c)
