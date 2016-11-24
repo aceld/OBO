@@ -28,14 +28,12 @@
 
 
 
-
-
 /* This callback gets invoked when we get any http request that doesn't match
  * any other callback.  Like any evhttp server callback, it has a simple job:
  * it must eventually call evhttp_send_error() or evhttp_send_reply().
  */
-    void
-login_cb (struct evhttp_request *req, void *arg)
+void
+reg_cb (struct evhttp_request *req, void *arg)
 { 
     struct evbuffer *evb = NULL;
     const char *uri = evhttp_request_get_uri (req);
@@ -88,11 +86,20 @@ login_cb (struct evhttp_request *req, void *arg)
     cJSON* root = cJSON_Parse(request_data_buf);
     cJSON* username = cJSON_GetObjectItem(root, "username");
     cJSON* password = cJSON_GetObjectItem(root, "password");
+    cJSON* isDriver = cJSON_GetObjectItem(root, "driver");
+    cJSON* tel      = cJSON_GetObjectItem(root, "tel");
+    cJSON* email    = cJSON_GetObjectItem(root, "email");
 
     printf("username = %s\n", username->valuestring);
     printf("password = %s\n", password->valuestring);
+    printf("driver   = %s\n", isDriver->valuestring);
+    printf("tel      = %s\n", tel->valuestring);
+    printf("email    = %s\n", email->valuestring);
 
     cJSON_Delete(root);
+
+
+    //数据库的相关操作
 
 
     //packet json

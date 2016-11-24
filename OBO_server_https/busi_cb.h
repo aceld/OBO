@@ -5,5 +5,6 @@
 #define UUID_STR_LEN        (36)
 
 void login_cb (struct evhttp_request *req, void *arg);
+void reg_cb (struct evhttp_request *req, void *arg);
 
 #endif
