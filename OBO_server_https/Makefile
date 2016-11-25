@@ -2,7 +2,7 @@
 CC=gcc
 CPPFLAGS= -I. -I./include 
 CFLAGS=-Wall 
-LIBS=-lpthread -levent -lm -lssl -lcrypto -levent_openssl -luuid
+LIBS=-lpthread -levent -lm -lssl -lcrypto -levent_openssl -luuid -lcurl
 
 #找到当前目录下所有的.c文件
 src = $(wildcard *.c)
@@ -11,7 +11,7 @@ src = $(wildcard *.c)
 obj = $(patsubst %.c, %.o, $(src))
 
 
-server=server
+server=OBO_web_server
 
 target=$(server)
 
