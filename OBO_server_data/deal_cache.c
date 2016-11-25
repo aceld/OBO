@@ -1,3 +1,10 @@
+/**
+ * @file deal_cache.c
+ * @brief  处理缓存型数据库存储业务
+ * @author liu_danbing <danbing_at@163.com>
+ * @version 1.0
+ * @date 2016-11-25
+ */
 #include "redis_op.h"
 #include "tables.h"
 #include "util.h"

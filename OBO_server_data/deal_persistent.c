@@ -1,3 +1,10 @@
+/**
+ * @file deal_persistent.c
+ * @brief  处理持久性数据库入库业务
+ * @author liu_danbing <danbing_at@163.com>
+ * @version 1.0
+ * @date 2016-11-25
+ */
 #include "dao_mysql.h"
 #include "tables.h"
 #include "util.h"

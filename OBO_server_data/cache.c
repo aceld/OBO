@@ -1,3 +1,10 @@
+/**
+ * @file cache.c
+ * @brief  缓存数据库 主入口
+ * @author liu_danbing <danbing_at@163.com>
+ * @version 1.0
+ * @date 2016-11-25
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
