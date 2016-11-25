@@ -89,12 +89,14 @@ reg_cb (struct evhttp_request *req, void *arg)
     cJSON* isDriver = cJSON_GetObjectItem(root, "driver");
     cJSON* tel      = cJSON_GetObjectItem(root, "tel");
     cJSON* email    = cJSON_GetObjectItem(root, "email");
+    cJSON* id_card  = cJSON_GetObjectItem(root, "id_card");
 
     printf("username = %s\n", username->valuestring);
     printf("password = %s\n", password->valuestring);
     printf("driver   = %s\n", isDriver->valuestring);
     printf("tel      = %s\n", tel->valuestring);
     printf("email    = %s\n", email->valuestring);
+    printf("id_card  = %s\n", id_card->valuestring);
 
     cJSON_Delete(root);
 
