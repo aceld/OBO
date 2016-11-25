@@ -24,18 +24,14 @@
 
 #include "https-common.h"
 #include "busi_cb.h"
+#include "util.h"
 
 
 
 
-
-/* This callback gets invoked when we get any http request that doesn't match
- * any other callback.  Like any evhttp server callback, it has a simple job:
- * it must eventually call evhttp_send_error() or evhttp_send_reply().
- */
-void
-cache_store_cb (struct evhttp_request *req, void *arg)
+void cache_store_cb (struct evhttp_request *req, void *arg)
 { 
+    int ret = 0;
     struct evbuffer *evb = NULL;
     const char *uri = evhttp_request_get_uri (req);
     struct evhttp_uri *decoded = NULL;
@@ -83,31 +79,14 @@ cache_store_cb (struct evhttp_request *req, void *arg)
        具体的：可以根据Post的参数执行相应操作，然后将结果输出
        ...
      */
-    //unpack json
-    cJSON* root = cJSON_Parse(request_data_buf);
-    cJSON* username = cJSON_GetObjectItem(root, "username");
-    cJSON* password = cJSON_GetObjectItem(root, "password");
+    //=========================================
 
-    printf("username = %s\n", username->valuestring);
-    printf("password = %s\n", password->valuestring);
+    ret = deal_cache(request_data_buf);
 
-    cJSON_Delete(root);
+    char *response_data = make_response_json(ret, "store cache cmd error");
 
 
-    //packet json
-    root = cJSON_CreateObject();
-
-    cJSON_AddStringToObject(root, "result", "ok");
-    /* 生成uuid随机的 */
-    //char uuid_str[UUID_STR_LEN] = {0};
-    //cJSON_AddStringToObject(root, "sessionid", get_random_uuid(uuid_str));
-
-    char *response_data = cJSON_Print(root);
-    cJSON_Delete(root);
-
-
-
-
+    //=========================================
     /* This holds the content we're sending. */
 
     //HTTP header

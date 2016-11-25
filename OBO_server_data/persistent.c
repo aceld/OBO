@@ -84,11 +84,13 @@ persistent_store_cb (struct evhttp_request *req, void *arg)
        具体的：可以根据Post的参数执行相应操作，然后将结果输出
        ...
      */
+    //=========================================
     ret = deal_persistent(request_data_buf);
 
     char *response_data = make_response_json(ret, "store persistent cmd error");
 
 
+    //=========================================
 
     /* This holds the content we're sending. */
 

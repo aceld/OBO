@@ -19,13 +19,6 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-#include <event2/bufferevent.h>
-#include <event2/bufferevent_ssl.h>
-#include <event2/event.h>
-#include <event2/http.h>
-#include <event2/buffer.h>
-#include <event2/util.h>
-#include <event2/keyvalq_struct.h>
 
 #include <cJSON.h>
 #include <curl/curl.h>
@@ -33,127 +26,12 @@
 #include "busi_cb.h"
 #include "util.h"
 
-static size_t reg_curl_to_dataserver_cb(char* ptr, size_t n, size_t m, void* userdata) 
-{
-    curl_response_data_t *data = (curl_response_data_t*)userdata;
-
-    int response_data_len = n*m;
-
-    memcpy(data->data+data->data_len, ptr, response_data_len);
-    data->data_len+=response_data_len;
-
-    return response_data_len;
-
-}
-
-
-static int reg_curl_to_dataserver(char* request_data_buf)
-{
-    //unpack json
-    int ret = 0;
-
-    cJSON* root = cJSON_Parse(request_data_buf);
-    cJSON* username = cJSON_GetObjectItem(root, "username");
-    cJSON* password = cJSON_GetObjectItem(root, "password");
-    cJSON* isDriver = cJSON_GetObjectItem(root, "driver");
-    cJSON* tel      = cJSON_GetObjectItem(root, "tel");
-    cJSON* email    = cJSON_GetObjectItem(root, "email");
-    cJSON* id_card  = cJSON_GetObjectItem(root, "id_card");
-
-    printf("username = %s\n", username->valuestring);
-    printf("password = %s\n", password->valuestring);
-    printf("driver   = %s\n", isDriver->valuestring);
-    printf("tel      = %s\n", tel->valuestring);
-    printf("email    = %s\n", email->valuestring);
-    printf("id_card  = %s\n", id_card->valuestring);
-
-
-
-    cJSON* request_json = cJSON_CreateObject();
-    cJSON_AddStringToObject(request_json, "cmd", "insert");
-    cJSON_AddStringToObject(request_json, "table", "OBO_TABLE_USER");
-    cJSON_AddStringToObject(request_json, "username", username->valuestring);
-    cJSON_AddStringToObject(request_json, "password", password->valuestring);
-    cJSON_AddStringToObject(request_json, "tel", tel->valuestring);
-    cJSON_AddStringToObject(request_json, "email", email->valuestring);
-    cJSON_AddStringToObject(request_json, "driver", isDriver->valuestring);
-    cJSON_AddStringToObject(request_json, "id_card", id_card->valuestring);
-
-    cJSON_Delete(root);
-
-    char * request_json_str = cJSON_Print(request_json);
 
 
 
 
-    //curl --> data server
-    CURL *curl = curl_easy_init();
 
-    //忽略https CA认证
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
-
-    //设置post数据
-    curl_easy_setopt(curl, CURLOPT_URL, URI_DATA_SERVER_PER);
-    curl_easy_setopt(curl, CURLOPT_POST, 1);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request_json_str);
-
-
-    //设置回调函数
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, reg_curl_to_dataserver_cb);
-    curl_response_data_t res_data;
-    memset(&res_data, 0, sizeof(res_data));
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res_data);
-
-    //提交请求给数据服务器
-    CURLcode code = curl_easy_perform(curl);
-    if (code != CURLE_OK) {
-        ret = -1;  
-        printf("curl easy perform error code = %d\n", code);
-        goto END;
-    }
-
-    res_data.data[res_data.data_len] = '\0';
-
-    cJSON *res_root = cJSON_Parse(res_data.data);
-
-    cJSON *result = cJSON_GetObjectItem(res_root, "result");
-    if (result && (strcmp(result->valuestring, "ok") == 0)) {
-        //succ
-        printf("store reg succ\n");
-    }
-    else {
-        //fail
-        cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
-        if (reason) {
-            printf("reg store error, reason = %s\n", reason->valuestring);
-        }
-        else {
-            printf("reg store  error, unknow reason, res_data=%s\n", res_data.data);
-        }
-
-        ret = -1;
-
-    }
-    cJSON_Delete(res_root);
-
-
-
-
-END:
-    curl_easy_cleanup(curl);
-    free(request_json_str);
-    return ret;
-}
-
-
-
-/* This callback gets invoked when we get any http request that doesn't match
- * any other callback.  Like any evhttp server callback, it has a simple job:
- * it must eventually call evhttp_send_error() or evhttp_send_reply().
- */
-    void
-reg_cb (struct evhttp_request *req, void *arg)
+void reg_cb (struct evhttp_request *req, void *arg)
 { 
     int ret = 0;
     struct evbuffer *evb = NULL;
@@ -203,16 +81,24 @@ reg_cb (struct evhttp_request *req, void *arg)
        具体的：可以根据Post的参数执行相应操作，然后将结果输出
        ...
      */
+    //=======================================================
 
 
-    // 发送libcurl请求
-    ret = reg_curl_to_dataserver(request_data_buf);
+    char sessionid[UUID_STR_LEN] = {0};
+    // 发送libcurl请求 进行远程入库
+    ret = curl_to_dataserver_reg(request_data_buf);
+    if (ret == 0) {
+        /* 生成uuid随机的 sessionid */
+        get_random_uuid(sessionid);
+        ret = curl_to_cacheserver_session(request_data_buf, sessionid);
+    }
 
-    char *response_data = make_reg_login_res_json(ret, "reg error");
 
 
+    //将sessionid存放到缓存数据库中
+    char *response_data = make_reg_login_res_json(ret, sessionid, "reg error");
 
-
+    //=======================================================
     /* This holds the content we're sending. */
 
     //HTTP header

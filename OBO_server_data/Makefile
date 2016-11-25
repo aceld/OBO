@@ -1,8 +1,8 @@
 
 CC=gcc
-CPPFLAGS= -I. -I./include -I/usr/include/mysql
+CPPFLAGS= -I. -I./include -I/usr/include/mysql -I/usr/local/include/hiredis
 CFLAGS=-Wall 
-LIBS=-lpthread -levent -lm -lssl -lcrypto -levent_openssl  -lmysqlclient
+LIBS=-lpthread -levent -lm -lssl -lcrypto -levent_openssl  -lmysqlclient -lhiredis
 
 #找到当前目录下所有的.c文件
 src = $(wildcard *.c)
@@ -25,7 +25,19 @@ $(obj):%.o:%.c
 
 
 #test_main程序
-$(server): https-server.o https-common.o cJSON.o persistent.o cache.o dao_mysql.o config.o util.o deal_persistent.o
+$(server):  https-server.o \
+            https-common.o \
+            cJSON.o \
+            persistent.o \
+            cache.o \
+            dao_mysql.o \
+            redis_op.o \
+            config.o \
+            util.o \
+            deal_persistent.o \
+            deal_cache.o \
+            make_log.o
+
 	$(CC) $^ -o $@ $(LIBS)
 
 

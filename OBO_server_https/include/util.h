@@ -19,6 +19,6 @@ typedef struct curl_response_data
 
 
 char *get_random_uuid(char *str);
-char *make_reg_login_res_json(int ret, char *reason);
+char *make_reg_login_res_json(int ret, char *sessionid, char *reason);
 
 #endif

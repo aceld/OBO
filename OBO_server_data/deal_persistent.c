@@ -43,33 +43,37 @@ int deal_persistent(char *request_data_buf)
     cJSON* cmd      = cJSON_GetObjectItem(root, "cmd");
     cJSON* table    = cJSON_GetObjectItem(root, "table");
 
-    //入库msql数据库
-    if (strcmp(table->valuestring, TABLE_USER) == 0) {
+    if (strcmp(cmd->valuestring, TABLE_CMD_INSERT) == 0) {
 
-        cJSON* username = cJSON_GetObjectItem(root, "username");
-        cJSON* password = cJSON_GetObjectItem(root, "password");
-        cJSON* tel      = cJSON_GetObjectItem(root, "tel");
-        cJSON* email    = cJSON_GetObjectItem(root, "email");
-        cJSON* driver   = cJSON_GetObjectItem(root, "driver");
-        cJSON* id_card  = cJSON_GetObjectItem(root, "id_card");
+        //入库msql数据库
+        if (strcmp(table->valuestring, TABLE_USER) == 0) {
 
-        printf("cmd = %s\n", cmd->valuestring);
-        printf("table = %s\n", table->valuestring);
-        printf("username = %s\n", username->valuestring);
-        printf("password = %s\n", password->valuestring);
-        printf("tel = %s\n", tel->valuestring);
-        printf("email = %s\n", email->valuestring);
-        printf("driver = %s\n", driver->valuestring);
-        printf("id_card = %s\n", id_card->valuestring);
+            cJSON* username = cJSON_GetObjectItem(root, "username");
+            cJSON* password = cJSON_GetObjectItem(root, "password");
+            cJSON* tel      = cJSON_GetObjectItem(root, "tel");
+            cJSON* email    = cJSON_GetObjectItem(root, "email");
+            cJSON* driver   = cJSON_GetObjectItem(root, "driver");
+            cJSON* id_card  = cJSON_GetObjectItem(root, "id_card");
 
-        ret = insert_table_user(username->valuestring,
-                             password->valuestring,
-                              tel->valuestring,
-                              email->valuestring,
-                              id_card->valuestring,
-                              driver->valuestring);
+            printf("cmd = %s\n", cmd->valuestring);
+            printf("table = %s\n", table->valuestring);
+            printf("username = %s\n", username->valuestring);
+            printf("password = %s\n", password->valuestring);
+            printf("tel = %s\n", tel->valuestring);
+            printf("email = %s\n", email->valuestring);
+            printf("driver = %s\n", driver->valuestring);
+            printf("id_card = %s\n", id_card->valuestring);
+
+            ret = insert_table_user(username->valuestring,
+                                 password->valuestring,
+                                  tel->valuestring,
+                                  email->valuestring,
+                                  id_card->valuestring,
+                                  driver->valuestring);
+        }
 
     }
+
 
 
     cJSON_Delete(root);
