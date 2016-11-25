@@ -1,7 +1,7 @@
 /**
  * @file remote_store.c
  * @brief  全部远程存储请求封装业务
- * @author liu_danbing <liudanbing@chanct.com>
+ * @author liu_danbing <danbing_at@163.com>
  * @version 1.0
  * @date 2016-11-25
  */

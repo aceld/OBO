@@ -1,7 +1,7 @@
 /**
  * @file login.c
  * @brief  登陆模块
- * @author liu_danbing <liudanbing@chanct.com>
+ * @author liu_danbing <danbing_at@chanct.com>
  * @version 1.0
  * @date 2016-11-25
  */
