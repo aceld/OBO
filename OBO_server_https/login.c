@@ -1,3 +1,10 @@
+/**
+ * @file login.c
+ * @brief  登陆模块
+ * @author liu_danbing <liudanbing@chanct.com>
+ * @version 1.0
+ * @date 2016-11-25
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

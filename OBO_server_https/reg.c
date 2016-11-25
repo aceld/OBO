@@ -1,3 +1,10 @@
+/**
+ * @file reg.c
+ * @brief  注册模块
+ * @author liu_danbing <liudanbing@chanct.com>
+ * @version 1.0
+ * @date 2016-11-25
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +33,11 @@
 #include "busi_cb.h"
 #include "util.h"
 
+static int reg_curl_to_dataserver()
+{
+
+}
+
 
 
 /* This callback gets invoked when we get any http request that doesn't match
@@ -35,6 +47,7 @@
 void
 reg_cb (struct evhttp_request *req, void *arg)
 { 
+    int ret = 0;
     struct evbuffer *evb = NULL;
     const char *uri = evhttp_request_get_uri (req);
     struct evhttp_uri *decoded = NULL;
@@ -101,7 +114,9 @@ reg_cb (struct evhttp_request *req, void *arg)
     cJSON_Delete(root);
 
 
-    //数据库的相关操作
+    // 发送libcurl请求
+    ret = 
+
 
 
     //packet json
