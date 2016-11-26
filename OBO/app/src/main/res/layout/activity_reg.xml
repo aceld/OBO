@@ -24,29 +24,50 @@
         android:id="@+id/et_reg_username"
         android:hint="请输入用户名"/>
 
-    <EditText
+    <Button
+        android:text="提交"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:layout_below="@+id/et_reg_username"
-        android:layout_alignRight="@+id/et_reg_username"
-        android:layout_alignEnd="@+id/et_reg_username"
-        android:layout_marginTop="22dp"
-        android:id="@+id/et_reg_passwd1"
-        android:hint="请输入密码"/>
+        android:id="@+id/bt_reg_submit"
+        android:layout_alignBottom="@+id/cb_is_driver"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="50dp"
+        android:layout_marginEnd="50dp" />
+
+    <CheckBox
+        android:text="司机"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cb_is_driver"
+        android:layout_marginTop="26dp"
+        android:layout_below="@+id/et_reg_id_card"
+        android:layout_alignLeft="@+id/et_reg_id_card"
+        android:layout_alignStart="@+id/et_reg_id_card" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
-        android:layout_below="@+id/et_reg_passwd1"
-        android:layout_alignRight="@+id/et_reg_passwd1"
-        android:layout_alignEnd="@+id/et_reg_passwd1"
-        android:layout_marginTop="14dp"
+        android:id="@+id/et_reg_passwd1"
+        android:hint="请输入密码"
+        android:layout_below="@+id/et_reg_username"
+        android:layout_alignLeft="@+id/et_reg_username"
+        android:layout_alignStart="@+id/et_reg_username"
+        android:layout_marginTop="14dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
         android:id="@+id/et_reg_passwd2"
-        android:hint="再次输入密码"/>
+        android:hint="再次输入密码"
+        android:layout_below="@+id/et_reg_passwd1"
+        android:layout_alignLeft="@+id/et_reg_passwd1"
+        android:layout_alignStart="@+id/et_reg_passwd1"
+        android:layout_marginTop="15dp" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -55,9 +76,10 @@
         android:ems="10"
         android:id="@+id/et_reg_email"
         android:hint="请输入Email"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/et_reg_passwd2"
         android:layout_alignLeft="@+id/et_reg_passwd2"
-        android:layout_alignStart="@+id/et_reg_passwd2" />
+        android:layout_alignStart="@+id/et_reg_passwd2"
+        android:layout_marginTop="11dp" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -69,27 +91,18 @@
         android:layout_below="@+id/et_reg_email"
         android:layout_alignLeft="@+id/et_reg_email"
         android:layout_alignStart="@+id/et_reg_email"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="15dp" />
 
-    <CheckBox
-        android:text="司机"
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/cb_is_driver"
-        android:layout_alignTop="@+id/et_reg_tel"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/et_reg_id_card"
+        android:hint="请输入身份证号码"
+        android:layout_below="@+id/et_reg_tel"
         android:layout_alignLeft="@+id/et_reg_tel"
         android:layout_alignStart="@+id/et_reg_tel"
-        android:layout_marginTop="66dp" />
-
-    <Button
-        android:text="提交"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/bt_reg_submit"
-        android:layout_alignBottom="@+id/cb_is_driver"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="50dp"
-        android:layout_marginEnd="50dp" />
+        android:layout_marginTop="18dp" />
 
 </RelativeLayout>

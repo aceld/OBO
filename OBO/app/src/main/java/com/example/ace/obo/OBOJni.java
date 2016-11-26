@@ -28,6 +28,7 @@ public class OBOJni {
                               String passwd,
                               String tel,
                               String email,
+                              String idcard,
                               boolean isDriver);
 
 

@@ -18,10 +18,10 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
 /*
  * Class:     com_example_ace_obo_OBOJni
  * Method:    Reg
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Z
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
-  (JNIEnv *, jobject, jstring, jstring, jstring, jstring, jboolean);
+  (JNIEnv *, jobject, jstring, jstring, jstring, jstring, jstring, jboolean);
 
 /*
  * Class:     com_example_ace_obo_OBOJni

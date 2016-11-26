@@ -11,18 +11,20 @@ extern "C" {
 
 JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
         (JNIEnv *env, jobject obj, jstring jusername, jstring jpasswd,
-         jstring jtel, jstring jemail, jboolean jisDriver)
+         jstring jtel, jstring jemail, jstring jid_card, jboolean jisDriver)
 {
     const char *username =  env->GetStringUTFChars(jusername, NULL);
     const char *passwd = env->GetStringUTFChars(jpasswd, NULL);
     const char *tel = env->GetStringUTFChars(jtel, NULL);
     const char *email = env->GetStringUTFChars(jemail, NULL);
+    const char *id_card = env->GetStringUTFChars(jid_card, NULL);
+
 
     bool isDriver = (jisDriver ==JNI_TRUE) ? true:false;
 
 
-    JNIINFO("REG: username = %s, passwd = %s, tel = %s, email =%s, isDriver = %d",
-            username, passwd, tel, email, isDriver);
+    JNIINFO("REG: username = %s, passwd = %s, tel = %s, email =%s, idcard = %s,isDriver = %d",
+            username, passwd, tel, email, id_card, isDriver);
 
 
 
@@ -34,7 +36,8 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
         password: "bbb",
         driver:   "yes/no",
         tel:      "13331333333",
-        email:    "danbing_at@163.cn"
+        email:    "danbing_at@163.cn",
+        id_card:  "2104041222121211122"
     }
      */
     Json json;
@@ -44,6 +47,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
     json.insert("driver", isDriver?"yes":"no");
     json.insert("tel", tel);
     json.insert("email", email);
+    json.insert("id_card", id_card);
 
     string json_str = json.print();
 
@@ -53,6 +57,8 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
     env->ReleaseStringUTFChars(jpasswd, passwd);
     env->ReleaseStringUTFChars(jtel, tel);
     env->ReleaseStringUTFChars(jemail, email);
+    env->ReleaseStringUTFChars(jid_card, id_card);
+
 
     string url = OBO_SERVER_IP;
     url +=":";

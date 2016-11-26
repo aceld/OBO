@@ -19,6 +19,7 @@ public class RegActivity extends AppCompatActivity {
     private EditText et_reg_passwd2 = null;
     private EditText et_reg_tel = null;
     private EditText et_reg_email = null;
+    private EditText et_reg_id_card = null;
     private Button   bt_reg_submit = null;
     private CheckBox cb_reg_isDriver = null;
     private boolean isDriver = false;
@@ -34,8 +35,10 @@ public class RegActivity extends AppCompatActivity {
         et_reg_passwd2 = (EditText)findViewById(R.id.et_reg_passwd2);
         et_reg_tel = (EditText)findViewById(R.id.et_reg_tel);
         et_reg_email =(EditText)findViewById(R.id.et_reg_email);
+        et_reg_id_card = (EditText)findViewById(R.id.et_reg_id_card);
         bt_reg_submit =(Button)findViewById(R.id.bt_reg_submit);
         cb_reg_isDriver = (CheckBox)findViewById(R.id.cb_is_driver);
+
 
 
 
@@ -61,6 +64,7 @@ public class RegActivity extends AppCompatActivity {
                 String passwd2 = et_reg_passwd2.getText().toString().trim();
                 String tel = et_reg_tel.getText().toString().trim();
                 String email = et_reg_email.getText().toString().trim();
+                String id_card = et_reg_id_card.getText().toString().trim();
 
                 if (username.length() == 0) {
                     Toast.makeText(getApplicationContext(),
@@ -92,7 +96,13 @@ public class RegActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(OBOJni.getInstence().Reg(username,passwd1,tel,email,isDriver)) {
+                if (id_card.length() == 0) {
+                    Toast.makeText(getApplicationContext(),
+                            "身份证号为空",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(OBOJni.getInstence().Reg(username,passwd1,tel,email, id_card,isDriver)) {
                     Intent intent = new Intent();
                     intent.setClass(RegActivity.this, MapMainActivity.class);
                     startActivity(intent);
