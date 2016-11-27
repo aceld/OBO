@@ -2,7 +2,7 @@
 #define __UTIL_H_
 
 #include "config.h"
-
+#include "make_log.h"
 #define CONFIG_PATH         "./conf/OBO_server_data.conf"
 
 #define IP_LEN              18
@@ -15,6 +15,11 @@
 #define DB_PASSWD_LEN       128
 
 //redis
+
+//log
+#define LOG_MODULE_SERVER_DATA         "server_data"
+#define LOG_PROC_PERSISTENT             "per"
+#define LOG_PROC_CACHE                  "cache"
 
 
 
