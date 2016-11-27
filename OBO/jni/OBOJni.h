@@ -7,8 +7,11 @@
 
 
 #include <stdio.h>
+#include <string>
 #include <jni.h>
 #include <android/log.h>
+
+using namespace std;
 
 #define jniLogTag           "JNI"
 #define OBO_SERVER_IP       "https://101.200.190.150"
@@ -19,5 +22,6 @@
 #define JNIINFO(fmt, ...) \
     __android_log_print(ANDROID_LOG_INFO, jniLogTag, fmt, __VA_ARGS__);
 
+extern string g_session;
 
 #endif //OBO_OBOJNI_H

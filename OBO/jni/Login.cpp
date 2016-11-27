@@ -42,14 +42,14 @@ extern "C" {
  * Signature: ()I
  */
 JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
-        (JNIEnv * env, jobject obj, jstring jusername, jstring jpasswd)
+        (JNIEnv *env, jobject obj, jstring jusername, jstring jpasswd, jboolean jisDriver)
 {
 
     const char *username =  env->GetStringUTFChars(jusername, NULL);
     const char *passwd = env->GetStringUTFChars(jpasswd, NULL);
+    const char *isDriver = (jisDriver==JNI_TRUE)?"yes":"no";
 
-
-    JNIINFO("LOGIN: username = %s, passwd = %s", username, passwd);
+    JNIINFO("LOGIN: username = %s, passwd = %s, isDriver = %s", username, passwd, isDriver);
 
     /*
      * 给服务端的协议   https://ip:port/login [json_data]
@@ -57,7 +57,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
     {
         username: "aaa",
         password: "bbb",
-        logintype: 1
+        driver: "yes"
     }
 
      * 得到服务器响应数据
@@ -80,7 +80,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
 
     cJSON_AddStringToObject(root, "username", username);
     cJSON_AddStringToObject(root, "password", passwd);
-    cJSON_AddNumberToObject(root, "logintype", 1);
+    cJSON_AddStringToObject(root, "driver", isDriver);
 
     char *json_str = cJSON_Print(root);
     cJSON_Delete(root);
@@ -125,6 +125,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
        //成功
        {
             result: "ok",
+            recode: "0",
             sessionid: "xxxxxxxx"
         }
         //失败
@@ -141,10 +142,9 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
     cJSON * result = cJSON_GetObjectItem(root, "result");
     if (result && (strcmp(result->valuestring, "ok")==0) ) {
         //succ
+        g_session = cJSON_GetObjectItem(root, "sessionid")->valuestring;
 
-        cJSON *sessionid = cJSON_GetObjectItem(root, "sessionid");
-
-        JNIINFO("Login succ: sessionid=%s", sessionid->valuestring);
+        JNIINFO("Login succ: sessionid=%s", g_session.c_str());
         login_succ = true;
 
 

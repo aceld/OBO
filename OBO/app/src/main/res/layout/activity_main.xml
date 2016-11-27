@@ -75,4 +75,14 @@
         android:layout_marginRight="21dp"
         android:layout_marginEnd="21dp"
         android:id="@+id/bt_reg" />
+
+    <CheckBox
+        android:text="司机"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/login_cb_isDriver"
+        android:layout_above="@+id/bt_reg"
+        android:layout_alignRight="@+id/bt_reg"
+        android:layout_alignEnd="@+id/bt_reg"
+        android:layout_marginBottom="11dp" />
 </RelativeLayout>

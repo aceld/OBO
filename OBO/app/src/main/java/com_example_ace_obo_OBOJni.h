@@ -9,11 +9,19 @@ extern "C" {
 #endif
 /*
  * Class:     com_example_ace_obo_OBOJni
+ * Method:    getSession
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getSession
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
  * Method:    Login
- * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Z)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
-  (JNIEnv *, jobject, jstring, jstring);
+  (JNIEnv *, jobject, jstring, jstring, jboolean);
 
 /*
  * Class:     com_example_ace_obo_OBOJni

@@ -3,6 +3,7 @@ package com.example.ace.obo;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -13,6 +14,9 @@ import android.widget.Toast;
 import java.sql.BatchUpdateException;
 
 public class RegActivity extends AppCompatActivity {
+
+    public static String LogTag="OBO-RegActivity";
+
 
     private EditText et_reg_username = null;
     private EditText et_reg_passwd1 = null;
@@ -102,7 +106,8 @@ public class RegActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(OBOJni.getInstence().Reg(username,passwd1,tel,email, id_card,isDriver)) {
+                if(OBOJni.getInstence().Reg(username,passwd1,tel,email, id_card,isDriver) == true) {
+                    Log.e(LogTag, "Sessionid = "+ OBOJni.getInstence().getSession());
                     Intent intent = new Intent();
                     intent.setClass(RegActivity.this, MapMainActivity.class);
                     startActivity(intent);

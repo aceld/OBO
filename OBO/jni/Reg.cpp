@@ -13,6 +13,8 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
         (JNIEnv *env, jobject obj, jstring jusername, jstring jpasswd,
          jstring jtel, jstring jemail, jstring jid_card, jboolean jisDriver)
 {
+
+
     const char *username =  env->GetStringUTFChars(jusername, NULL);
     const char *passwd = env->GetStringUTFChars(jpasswd, NULL);
     const char *tel = env->GetStringUTFChars(jtel, NULL);
@@ -70,7 +72,8 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
     Curl curl(url, true);
 
 
-    if (!curl.execute(json_str)) {
+    if (curl.execute(json_str) == false) {
+        JNIINFO("%s", "curl execute error")
         return JNI_FALSE;
     }
 
@@ -95,12 +98,12 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
     Json json_response;
     json_response.parse(curl.responseData());
 
-    string result = json.value("result");
+    string result = json_response.value("result");
     if (result.length() != 0) {
         if (result == "ok") {
 
-            string sessionid = json.value("sessionid");
-            JNIINFO("reg succ, sessionid=%s", sessionid.c_str());
+            g_session = json_response.value("sessionid");
+            JNIINFO("reg succ, sessionid=%s", g_session.c_str());
             return JNI_TRUE;
 
         }
@@ -110,10 +113,10 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
         }
     }
 
+    JNIINFO("result len =%d", result.length());
 
 
-
-    return JNI_TRUE;
+    return JNI_FALSE;
 }
 
 }

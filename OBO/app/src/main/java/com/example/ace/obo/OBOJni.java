@@ -22,7 +22,9 @@ public class OBOJni {
         System.loadLibrary("OBOjni");
     }
 
-    public native boolean Login(String username, String passwd);
+    public native String getSession();
+
+    public native boolean Login(String username, String passwd, boolean isDriver);
 
     public native boolean Reg(String username,
                               String passwd,
