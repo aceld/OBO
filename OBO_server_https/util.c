@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <string.h>
 #include "util.h"
 #include "cJSON.h"
 
@@ -9,6 +11,20 @@ char *get_random_uuid(char *str)
     uuid_unparse(uuid, str);
 
     return str;
+}
+
+char * create_sessionid(const char *isDriver, char *sessionid)
+{
+    char uuid[UUID_STR_LEN] = {0};
+
+    if (strcmp(isDriver, "yes") == 0) {
+        sprintf(sessionid, "online-driver-%s", get_random_uuid(uuid));
+    }
+    else {
+        sprintf(sessionid, "online-user-%s", get_random_uuid(uuid));
+    }
+
+    return sessionid;
 }
 
 char *make_reg_login_res_json(int ret, char *sessionid, char *reason)

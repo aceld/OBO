@@ -73,46 +73,43 @@ static int curl_send(const char *uri, const char* request_json_str, curl_respons
 
 /* -------------------------------------------*/
 /**
- * @brief  远程存储注册信息表 持久
+ * @brief  远程注册用户请求业务
  *
- * @param request_data_buf
+ * @param username
+ * @param password
+ * @param tel
+ * @param email
+ * @param isDriver    "yes" or "no"
+ * @param id_card       
+ * @param sessionid OUT 得到的sessionid
  *
  * @returns   
+ *              0 succ, -1 fail
  */
 /* -------------------------------------------*/
-int curl_to_dataserver_reg(char* request_data_buf)
+int curl_to_dataserver_reg(const char* username, 
+                           const char* password, 
+                           const char* tel, 
+                           const char* email, 
+                           const char* isDriver, 
+                           const char* id_card,
+                           char *sessionid)
 {
-    //unpack json
     int ret = 0;
-
-    cJSON* root = cJSON_Parse(request_data_buf);
-    cJSON* username = cJSON_GetObjectItem(root, "username");
-    cJSON* password = cJSON_GetObjectItem(root, "password");
-    cJSON* isDriver = cJSON_GetObjectItem(root, "driver");
-    cJSON* tel      = cJSON_GetObjectItem(root, "tel");
-    cJSON* email    = cJSON_GetObjectItem(root, "email");
-    cJSON* id_card  = cJSON_GetObjectItem(root, "id_card");
-
-    printf("username = %s\n", username->valuestring);
-    printf("password = %s\n", password->valuestring);
-    printf("driver   = %s\n", isDriver->valuestring);
-    printf("tel      = %s\n", tel->valuestring);
-    printf("email    = %s\n", email->valuestring);
-    printf("id_card  = %s\n", id_card->valuestring);
-
 
 
     cJSON* request_json = cJSON_CreateObject();
     cJSON_AddStringToObject(request_json, "cmd", "insert");
     cJSON_AddStringToObject(request_json, "table", "OBO_TABLE_USER");
-    cJSON_AddStringToObject(request_json, "username", username->valuestring);
-    cJSON_AddStringToObject(request_json, "password", password->valuestring);
-    cJSON_AddStringToObject(request_json, "tel", tel->valuestring);
-    cJSON_AddStringToObject(request_json, "email", email->valuestring);
-    cJSON_AddStringToObject(request_json, "driver", isDriver->valuestring);
-    cJSON_AddStringToObject(request_json, "id_card", id_card->valuestring);
+    cJSON_AddStringToObject(request_json, "busi", "reg");
+    cJSON_AddStringToObject(request_json, "username", username);
+    //TODO 将password进行md5加密
+    cJSON_AddStringToObject(request_json, "password", password);
+    cJSON_AddStringToObject(request_json, "tel", tel);
+    cJSON_AddStringToObject(request_json, "email", email);
+    cJSON_AddStringToObject(request_json, "driver", isDriver);
+    cJSON_AddStringToObject(request_json, "id_card", id_card);
 
-    cJSON_Delete(root);
 
 
     char * request_json_str = cJSON_Print(request_json);
@@ -125,6 +122,7 @@ int curl_to_dataserver_reg(char* request_data_buf)
         printf("curl send error\n");
         goto END;
     }
+    free(request_json_str);
 
 
     cJSON *res_root = cJSON_Parse(res_data.data);
@@ -145,46 +143,121 @@ int curl_to_dataserver_reg(char* request_data_buf)
         }
 
         ret = -1;
-
     }
     cJSON_Delete(res_root);
 
 
+    //生成sessionid
+    if (ret == 0) {
+        create_sessionid(isDriver, sessionid);
+        ret = curl_to_cacheserver_session(username, sessionid);
+    }
+
 
 END:
-    free(request_json_str);
     return ret;
 }
+
+
+/* -------------------------------------------*/
+/**
+ * @brief  远程查询登陆信息表
+ *
+ * @param username
+ * @param password
+ * @param sessionid OUT得到的sessionid
+ *
+ * @returns   
+ *  0 succ  -1 fail
+ */
+/* -------------------------------------------*/
+int curl_to_dataserver_login(const char *username,
+                             const char *password,
+                             const char *isDriver,
+                             char *sessionid)
+{
+    int ret = 0;
+
+    cJSON* request_json = cJSON_CreateObject();
+    cJSON_AddStringToObject(request_json, "cmd", "query");
+    cJSON_AddStringToObject(request_json, "busi", "login");
+    cJSON_AddStringToObject(request_json, "table", "OBO_TABLE_USER");
+    cJSON_AddStringToObject(request_json, "username", username);
+    //TODO 将password进行md5加密
+    cJSON_AddStringToObject(request_json, "password", password);
+    cJSON_AddStringToObject(request_json, "driver", isDriver);
+
+
+    char * request_json_str = cJSON_Print(request_json);
+    curl_response_data_t res_data;
+    memset(&res_data, 0, sizeof(res_data));
+
+    if (curl_send(URI_DATA_SERVER_PER, request_json_str,  &res_data, 1) != 0) {
+        ret = -1;
+        printf("curl send error\n");
+        goto END;
+    }
+    free(request_json_str);
+
+    cJSON *res_root = cJSON_Parse(res_data.data);
+
+    cJSON *result = cJSON_GetObjectItem(res_root, "result");
+    if (result && (strcmp(result->valuestring, "ok") == 0)) {
+        //succ
+        printf("query login succ\n");
+        ret = 0;
+    }
+    else {
+        //fail
+        cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
+        if (reason) {
+            printf("query login, reason = %s\n", reason->valuestring);
+        }
+        else {
+            printf("query  login, unknow reason, res_data=%s\n", res_data.data);
+        }
+
+        ret = -1;
+
+    }
+    cJSON_Delete(res_root);
+
+    //生成sessionid
+    if (ret == 0) {
+        create_sessionid(isDriver, sessionid);
+        ret = curl_to_cacheserver_session(username, sessionid);
+    }
+
+
+END:
+    return ret;
+}
+
 
 /* -------------------------------------------*/
 /**
  * @brief  远程存储SESSIONID - id_card  临时
  *
- * @param request_data_buf
+ * @param username
+ * @param sessionid 
  *
  * @returns   
+ *          0 succ, -1 fail
  */
 /* -------------------------------------------*/
-int curl_to_cacheserver_session(char *request_data_buf, char* sessionid)
+int curl_to_cacheserver_session(const char *username,  const char* sessionid)
 {
-    //unpack json
     int ret = 0;
 
-    cJSON* root = cJSON_Parse(request_data_buf);
-    cJSON* id_card  = cJSON_GetObjectItem(root, "id_card");
-
-    printf("sessionid = %s, id_card  = %s\n", sessionid, id_card->valuestring);
-
-
+    printf("sessionid = %s, username  = %s\n", sessionid, username);
 
     cJSON* request_json = cJSON_CreateObject();
     cJSON_AddStringToObject(request_json, "cmd", "setString");
     cJSON_AddStringToObject(request_json, "unlimited", "no");
     cJSON_AddStringToObject(request_json, "key", sessionid);
-    cJSON_AddStringToObject(request_json, "value", id_card->valuestring);
+    cJSON_AddStringToObject(request_json, "value", username);
     cJSON_AddNumberToObject(request_json, "lifecycle", 120);
 
-    cJSON_Delete(root);
 
     char * request_json_str = cJSON_Print(request_json);
     curl_response_data_t res_data;
@@ -218,8 +291,6 @@ int curl_to_cacheserver_session(char *request_data_buf, char* sessionid)
 
     }
     cJSON_Delete(res_root);
-
-
 
 
 END:

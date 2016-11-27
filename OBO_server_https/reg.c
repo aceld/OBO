@@ -27,10 +27,6 @@
 #include "util.h"
 
 
-
-
-
-
 void reg_cb (struct evhttp_request *req, void *arg)
 { 
     int ret = 0;
@@ -82,22 +78,39 @@ void reg_cb (struct evhttp_request *req, void *arg)
        ...
      */
     //=======================================================
+    //unpack json
+    cJSON* root = cJSON_Parse(request_data_buf);
+    cJSON* username = cJSON_GetObjectItem(root, "username");
+    cJSON* password = cJSON_GetObjectItem(root, "password");
+    cJSON* isDriver = cJSON_GetObjectItem(root, "driver");
+    cJSON* tel      = cJSON_GetObjectItem(root, "tel");
+    cJSON* email    = cJSON_GetObjectItem(root, "email");
+    cJSON* id_card  = cJSON_GetObjectItem(root, "id_card");
+
+    printf("username = %s\n", username->valuestring);
+    printf("password = %s\n", password->valuestring);
+    printf("driver   = %s\n", isDriver->valuestring);
+    printf("tel      = %s\n", tel->valuestring);
+    printf("email    = %s\n", email->valuestring);
+    printf("id_card  = %s\n", id_card->valuestring);
 
 
-    char sessionid[UUID_STR_LEN] = {0};
+
+    char sessionid[SESSIONID_STR_LEN] = {0};
     // 发送libcurl请求 进行远程入库
-    ret = curl_to_dataserver_reg(request_data_buf);
-    if (ret == 0) {
-        /* 生成uuid随机的 sessionid */
-        get_random_uuid(sessionid);
-        ret = curl_to_cacheserver_session(request_data_buf, sessionid);
-    }
-
+    ret = curl_to_dataserver_reg(username->valuestring,
+                                 password->valuestring,
+                                 tel->valuestring,
+                                 email->valuestring,
+                                 isDriver->valuestring,
+                                 id_card->valuestring,
+                                 sessionid);
 
 
     //将sessionid存放到缓存数据库中
     char *response_data = make_reg_login_res_json(ret, sessionid, "reg error");
 
+    cJSON_Delete(root);
     //=======================================================
     /* This holds the content we're sending. */
 
