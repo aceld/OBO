@@ -22,7 +22,10 @@ include $(CLEAR_VARS)
 # 编译的目标
 LOCAL_MODULE := OBOjni
 # 参与编译的文件
-LOCAL_SRC_FILES := Login.cpp Reg.cpp cJSON.cpp curlTest.cpp Json.cpp Curl.cpp Session.cpp
+LOCAL_SRC_FILES := Login.cpp Reg.cpp \
+                   cJSON.cpp curlTest.cpp \
+                   Json.cpp Curl.cpp \
+                   Data.cpp StartOrder.cpp
 # 添加其他动态库
 LOCAL_LDLIBS := -llog -lz
 # 添加依赖的静态库

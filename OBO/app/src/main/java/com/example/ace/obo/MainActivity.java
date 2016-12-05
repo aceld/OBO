@@ -67,9 +67,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(LogTag, "Login result is " + login_result);
 
                 if (login_result == true) {
-                    Intent intent = new Intent();
-                    intent.setClass(MainActivity.this, MapMainActivity.class);
-                    startActivity(intent);
+                    if (OBOJni.getInstence().getIsDriver().equals("no")) {
+                        Intent intent = new Intent();
+                        intent.setClass(MainActivity.this, PassengerMapActivity.class);
+                        startActivity(intent);
+                    }
+                    else {
+                        Intent intent = new Intent();
+                        intent.setClass(MainActivity.this, MapMainActivity.class);
+                        startActivity(intent);
+                    }
                 }
                 else {
                     Toast.makeText(getApplicationContext(),

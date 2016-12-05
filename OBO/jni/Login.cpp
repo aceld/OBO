@@ -5,7 +5,7 @@
 #include "OBOJni.h"
 #include "curl/curl.h"
 #include "cJSON.h"
-
+#include "Data.h"
 
 
 typedef struct login_response_data
@@ -50,6 +50,11 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
     const char *isDriver = (jisDriver==JNI_TRUE)?"yes":"no";
 
     JNIINFO("LOGIN: username = %s, passwd = %s, isDriver = %s", username, passwd, isDriver);
+
+    //保存当前角色
+    Data::getInstance()->setIsDriver(isDriver);
+    //设置当前的orderid为空
+    Data::getInstance()->setOrderid("NONE");
 
     /*
      * 给服务端的协议   https://ip:port/login [json_data]
@@ -142,9 +147,8 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
     cJSON * result = cJSON_GetObjectItem(root, "result");
     if (result && (strcmp(result->valuestring, "ok")==0) ) {
         //succ
-        g_session = cJSON_GetObjectItem(root, "sessionid")->valuestring;
-
-        JNIINFO("Login succ: sessionid=%s", g_session.c_str());
+        Data::getInstance()->setSessionid(cJSON_GetObjectItem(root, "sessionid")->valuestring);
+        JNIINFO("login succ, sessionid=%s", Data::getInstance()->getSessionid().c_str());
         login_succ = true;
 
 

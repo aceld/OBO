@@ -5,6 +5,7 @@
 #include "OBOJni.h"
 #include "Json.h"
 #include "Curl.h"
+#include "Data.h"
 
 extern "C" {
 
@@ -22,13 +23,17 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
     const char *id_card = env->GetStringUTFChars(jid_card, NULL);
 
 
-    bool isDriver = (jisDriver ==JNI_TRUE) ? true:false;
+    const char* isDriver = (jisDriver ==JNI_TRUE) ? "yes":"no";
 
 
-    JNIINFO("REG: username = %s, passwd = %s, tel = %s, email =%s, idcard = %s,isDriver = %d",
+    JNIINFO("REG: username = %s, passwd = %s, tel = %s, email =%s, idcard = %s,isDriver = %s",
             username, passwd, tel, email, id_card, isDriver);
 
+    //保存当前角色
+    Data::getInstance()->setIsDriver(isDriver);
 
+    //设置当前的orderid为空
+    Data::getInstance()->setOrderid("NONE");
 
     /*
      * 给服务端的协议   https://ip:port/reg [json_data]
@@ -46,7 +51,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
 
     json.insert("username", username);
     json.insert("password", passwd);
-    json.insert("driver", isDriver?"yes":"no");
+    json.insert("driver", isDriver);
     json.insert("tel", tel);
     json.insert("email", email);
     json.insert("id_card", id_card);
@@ -102,8 +107,8 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
     if (result.length() != 0) {
         if (result == "ok") {
 
-            g_session = json_response.value("sessionid");
-            JNIINFO("reg succ, sessionid=%s", g_session.c_str());
+            Data::getInstance()->setSessionid(json_response.value("sessionid"));
+            JNIINFO("reg succ, sessionid=%s", Data::getInstance()->getSessionid().c_str());
             return JNI_TRUE;
 
         }

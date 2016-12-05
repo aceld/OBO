@@ -18,10 +18,12 @@ using namespace std;
 #define OBO_SERVER_PORT     "18888"
 
 #define RESPONSE_DATA_LEN   (4096)
+#define TIME_STR_LEN        (64)
 
 #define JNIINFO(fmt, ...) \
     __android_log_print(ANDROID_LOG_INFO, jniLogTag, fmt, __VA_ARGS__);
 
-extern string g_session;
+
+
 
 #endif //OBO_OBOJNI_H

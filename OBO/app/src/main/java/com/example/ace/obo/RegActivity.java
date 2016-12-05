@@ -107,10 +107,19 @@ public class RegActivity extends AppCompatActivity {
                 }
 
                 if(OBOJni.getInstence().Reg(username,passwd1,tel,email, id_card,isDriver) == true) {
-                    Log.e(LogTag, "Sessionid = "+ OBOJni.getInstence().getSession());
-                    Intent intent = new Intent();
-                    intent.setClass(RegActivity.this, MapMainActivity.class);
-                    startActivity(intent);
+                    Log.e(LogTag, "Sessionid = "+ OBOJni.getInstence().getSessionid());
+
+                    if (OBOJni.getInstence().getIsDriver().equals("no")) {
+                        Intent intent = new Intent();
+                        intent.setClass(RegActivity.this, PassengerMapActivity.class);
+                        startActivity(intent);
+                    }
+                    else {
+                        Intent intent = new Intent();
+                        intent.setClass(RegActivity.this, MapMainActivity.class);
+                        startActivity(intent);
+                    }
+
                 }
                 else {
                     Toast.makeText(getApplicationContext(),

@@ -9,14 +9,6 @@ extern "C" {
 #endif
 /*
  * Class:     com_example_ace_obo_OBOJni
- * Method:    getSession
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getSession
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_example_ace_obo_OBOJni
  * Method:    Login
  * Signature: (Ljava/lang/String;Ljava/lang/String;Z)Z
  */
@@ -30,6 +22,46 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Login
  */
 JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
   (JNIEnv *, jobject, jstring, jstring, jstring, jstring, jstring, jboolean);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    StartOrder
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_StartOrder
+  (JNIEnv *, jobject, jstring, jstring, jstring, jstring, jstring, jstring, jstring);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    getOrderid
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getOrderid
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    getSessionid
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getSessionid
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    getStatus
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getStatus
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    getIsDriver
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getIsDriver
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_example_ace_obo_OBOJni
