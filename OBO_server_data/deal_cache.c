@@ -10,23 +10,48 @@
 #include "util.h"
 #include "cJSON.h"
 
-
-int deal_cache(char *request_data_buf)
+int deal_cache_setLifecycle(cJSON *root)
 {
-    int ret = 0;
-    //unpack json
-    cJSON* root     = cJSON_Parse(request_data_buf);
-    cJSON* cmd      = cJSON_GetObjectItem(root, "cmd");
+    /*
+        {
+            cmd:     "setLifcycle",
+            key:     "online-driver-[sessionid]",
+            lifecycle: 600
+        }
+     */
+        int ret = 0;
 
-    //入库redis数据库
-    if (strcmp(cmd->valuestring, KEY_CMD_SETSTRING) == 0) {
-        //设置 String类型的 key-value键值对
+        cJSON* key          = cJSON_GetObjectItem(root, "key");
+        cJSON* lifecycle    = cJSON_GetObjectItem(root, "lifecycle");
+        
+        printf("key = %s, lifecycle = %d\n", key->valuestring, lifecycle->valueint);
 
+        redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
+                                                 g_db_config.cache_port);
+        if (conn == NULL) {
+            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            ret = -1;
+            goto END;
+        
+        }
+        //给该key设置声明周期
+        ret = rop_set_key_lifetime(conn, key->valuestring, lifecycle->valueint);
+
+END:
+        rop_disconnect(conn);
+        return ret;
+}
+
+/*
+        处理setString 指令 
+ */
+int deal_cache_setString(cJSON *root)
+{
+        int ret = 0;
         cJSON* key      = cJSON_GetObjectItem(root, "key");
         cJSON* value    = cJSON_GetObjectItem(root, "value");
         cJSON* unlimited= cJSON_GetObjectItem(root, "unlimited");
 
-        printf("cmd = %s\n", cmd->valuestring);
         printf("key = %s\n", key->valuestring);
         printf("value = %s\n", value->valuestring);
         printf("unlimited = %s\n", unlimited->valuestring);
@@ -51,12 +76,218 @@ int deal_cache(char *request_data_buf)
             rop_set_key_lifetime(conn, key->valuestring, lifecycle->valueint);
         }
 
+END:
         rop_disconnect(conn);
-    }
+        return ret;
+}
+
+
+/*
+        处理setHash 指令 
+ */
+int deal_cache_setHash(cJSON *root)
+{
+        int ret = 0;
+        int i = 0;
+
+        /*
+            cmd:     "setHash",
+            key:     "online-driver-[sessionid]",
+            fields:   ["username","orderid"],
+            values:   ["盖伦", "NONE"]
+         */
+        cJSON* key      = cJSON_GetObjectItem(root, "key");
+        cJSON* fields   = cJSON_GetObjectItem(root, "fields");
+        cJSON* values   = cJSON_GetObjectItem(root, "values");
+        int array_size = cJSON_GetArraySize(fields);
+
+        RFIELDS rfields  = malloc (FIELD_ID_SIZE *array_size);
+        RVALUES rvalues = malloc(VALUES_ID_SIZE *array_size);
+
+
+
+        for (i = 0;i < array_size; i++) {
+            strncpy(rfields[i], cJSON_GetArrayItem(fields, i)->valuestring, FIELD_ID_SIZE-1);
+            strncpy(rvalues[i], cJSON_GetArrayItem(values, i)->valuestring, VALUES_ID_SIZE-1);
+        }
+
+
+        redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
+                                                 g_db_config.cache_port);
+        if (conn == NULL) {
+            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            ret = -1;
+            goto END;
+        
+        }
+        
+        ret = rop_hash_set_append(conn, key->valuestring, rfields, rvalues, array_size);
+
 
 END:
+        rop_disconnect(conn);
+        if (rfields != NULL) {
+            free(rfields);
+        }
+        if (rvalues != NULL) {
+            free(rvalues);
+        }
+        return ret;
+}
+
+/*
+        处理getHash 指令 
+ */
+int deal_cache_getHash(cJSON *root, RVALUES *rvalues_p, int *value_num_p)
+{
+        int ret = 0;
+        int i = 0;
+
+        /*
+            cmd:     "getHash",
+            key:     "online-driver-[sessionid]",
+            fields:   ["username","orderid"]
+         */
+        cJSON* key      = cJSON_GetObjectItem(root, "key");
+        cJSON* fields   = cJSON_GetObjectItem(root, "fields");
+        int array_size = cJSON_GetArraySize(fields);
+
+        RFIELDS rfields  = malloc (FIELD_ID_SIZE *array_size);
+        RVALUES rvalues  = malloc (VALUES_ID_SIZE *array_size);
+
+        for (i = 0;i < array_size; i++) {
+            strncpy(rfields[i], cJSON_GetArrayItem(fields, i)->valuestring, FIELD_ID_SIZE-1);
+        }
+
+
+        redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
+                                                 g_db_config.cache_port);
+        if (conn == NULL) {
+            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            ret = -1;
+            goto END;
+        
+        }
+        
+        ret = rop_hash_get_append(conn, key->valuestring, rfields, rvalues, array_size);
+
+        *rvalues_p = rvalues;
+        *value_num_p = array_size;
+
+END:
+        rop_disconnect(conn);
+        if (rfields != NULL) {
+            free(rfields);
+        }
+        if (rvalues != NULL) {
+            free(rvalues);
+        }
+        return ret;
+}
+
+/*
+        处理radiusGeo 指令 
+ */
+int deal_cache_radiusGeo(cJSON *root, RGEO *geo_array_p, int *geo_num_p)
+{
+        int ret = 0;
+
+
+        /*
+           {
+               cmd:      "radiusGeo",
+               key:      "ONLINE_DRIVER_GEO_ZSET",
+               longitude:  "98.123123123",
+               latitude:   "39.123123123",
+               radius:    "200"  //方圆多少米
+            }
+         */
+        cJSON* key        = cJSON_GetObjectItem(root, "key");
+        cJSON* longitude  = cJSON_GetObjectItem(root, "longitude");
+        cJSON* latitude   = cJSON_GetObjectItem(root, "latitude");
+        cJSON* radius     = cJSON_GetObjectItem(root, "radius");
+
+
+
+        redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
+                                                 g_db_config.cache_port);
+        if (conn == NULL) {
+            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            ret = -1;
+            goto END;
+        
+        }
+
+
+
+        ret = rop_geo_radius(conn, key->valuestring, longitude->valuestring, latitude->valuestring, radius->valuestring, geo_array_p, geo_num_p);
+
+
+END:
+        rop_disconnect(conn);
+        return ret;
+}
+
+
+
+char * deal_cache(const char *request_data_buf)
+{
+    char *response_data;
+    int ret = 0;
+    //unpack json
+    cJSON* root     = cJSON_Parse(request_data_buf);
+    cJSON* cmd      = cJSON_GetObjectItem(root, "cmd");
+
+    printf("cmd = %s\n", cmd->valuestring);
+    //入库redis数据库
+    if (strcmp(cmd->valuestring, KEY_CMD_SETSTRING) == 0) {
+        //设置 String类型的 key-value键值对
+        ret = deal_cache_setString(root);
+
+        response_data = make_response_json(ret, "set string ERROR");
+    }
+
+    else if (strcmp(cmd->valuestring, KEY_CMD_SETHASH) == 0) {
+        //设置 Hash类型的 数据
+        ret = deal_cache_setHash(root);
+        
+        response_data = make_response_json(ret, "set hash ERROR");
+    }
+
+    else if (strcmp(cmd->valuestring, KEY_CMD_SETLIFECYCLE) == 0) {
+        //设置 key 的生命周期
+        ret = deal_cache_setLifecycle(root);
+
+        response_data = make_response_json(ret, "set lifecycle ERROR");
+    }
+    else if (strcmp(cmd->valuestring, KEY_CMD_GETHASH) == 0) {
+        //获取 hash的 字段值
+        RVALUES rvalues = NULL;
+        int value_num = 0;
+        ret = deal_cache_getHash(root, &rvalues, &value_num);
+
+        response_data = make_response_gethash_json(ret, "get hash field ERROR", rvalues, value_num);
+    }
+    else if (strcmp(cmd->valuestring, KEY_CMD_RADIUSGEO) == 0) {
+        //获取 周边范围内地理位置信息
+
+        RGEO geo_array = NULL;
+        int geo_num = 0;
+
+        ret = deal_cache_radiusGeo(root, &geo_array, &geo_num);
+
+        response_data = make_response_geo_drivers_json(ret, "radiusGeo error", geo_array, geo_num);
+
+        if (geo_array != NULL) {
+            free(geo_array);
+        }
+    }
+    else {
+        response_data = make_response_json(-1, "unknow cache CMD");
+    }
+    
+
     cJSON_Delete(root);
 
-    return ret;
-
+    return response_data;
 }

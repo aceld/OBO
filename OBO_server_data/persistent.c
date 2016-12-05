@@ -43,7 +43,6 @@
 void
 persistent_store_cb (struct evhttp_request *req, void *arg)
 { 
-    int ret = 0;
     struct evbuffer *evb = NULL;
     const char *uri = evhttp_request_get_uri (req);
     struct evhttp_uri *decoded = NULL;
@@ -92,10 +91,10 @@ persistent_store_cb (struct evhttp_request *req, void *arg)
        ...
      */
     //=========================================
-    ret = deal_persistent(request_data_buf);
 
-    char *response_data = make_response_json(ret, "store persistent cmd error");
-
+    char *response_data = NULL;
+    response_data = deal_persistent(request_data_buf);
+    //response_data need free at last
 
     //=========================================
 
@@ -117,8 +116,10 @@ persistent_store_cb (struct evhttp_request *req, void *arg)
         evbuffer_free (evb);
 
 
-    printf("[response]:\n");
-    printf("%s\n", response_data);
+    if (response_data != NULL) {
+        printf("[response]:\n");
+        printf("%s\n", response_data);
 
-    free(response_data);
+        free(response_data);
+    }
 }

@@ -10,10 +10,11 @@
 #define TABLE_USER          "OBO_TABLE_USER"
 
 
-#define KEY_CMD_SETSTRING   "setString"
-#define KEY_CMD_SETHASH     "setHash"
+#define KEY_CMD_SETSTRING       "setString"
+#define KEY_CMD_SETHASH         "setHash"
+#define KEY_CMD_SETLIFECYCLE    "setLifecycle"
+#define KEY_CMD_RADIUSGEO       "radiusGeo"
 
-//用户的sessionid（具有超时时间）
-#define KEY_SESSIONID       
+#define KEY_CMD_GETHASH         "getHash"
 
 #endif

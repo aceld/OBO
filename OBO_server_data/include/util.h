@@ -1,8 +1,10 @@
 #ifndef __UTIL_H_
 #define __UTIL_H_
-
+#include <stdio.h>
+#include <string.h>
 #include "config.h"
 #include "make_log.h"
+#include "redis_op.h"
 #define CONFIG_PATH         "./conf/OBO_server_data.conf"
 
 #define IP_LEN              18
@@ -45,5 +47,7 @@ extern db_config_t g_db_config;
 void config_init();
 
 char *make_response_json(int ret, char *reason);
+char *make_response_gethash_json(int ret, char *reason, RVALUES rvalues, int value_num);
+char *make_response_geo_drivers_json(int ret, char *reason, RGEO geo_array, int geo_num);
 
 #endif

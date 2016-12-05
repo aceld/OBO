@@ -96,19 +96,31 @@ void reg_cb (struct evhttp_request *req, void *arg)
 
 
 
-    char sessionid[SESSIONID_STR_LEN] = {0};
     // 发送libcurl请求 进行远程入库
     ret = curl_to_dataserver_reg(username->valuestring,
                                  password->valuestring,
                                  tel->valuestring,
                                  email->valuestring,
                                  isDriver->valuestring,
-                                 id_card->valuestring,
-                                 sessionid);
+                                 id_card->valuestring);
+    char sessionid[SESSIONID_STR_LEN] = {0};
+    char *recode = RECODE_OK;
+    if (ret == 0) {
+        //生成sessionid
+        create_sessionid(isDriver->valuestring, sessionid);
+
+        //将sessionid入库远程缓存数据库
+        ret = curl_to_cacheserver_session(username->valuestring, sessionid, ORDER_ID_NONE);
+    }
+
+    if (ret == 0) {
+        //设置key的超时时间
+        ret = curl_to_cacheserver_lifecycle(sessionid, SESSIONID_LIFECYCLE);
+    }
 
 
     //将sessionid存放到缓存数据库中
-    char *response_data = make_reg_login_res_json(ret, sessionid, "reg error");
+    char *response_data = make_reg_login_res_json(ret, recode, sessionid, "reg error");
 
     cJSON_Delete(root);
     //=======================================================

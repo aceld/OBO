@@ -99,11 +99,25 @@ void login_cb (struct evhttp_request *req, void *arg)
     printf("password = %s\n", password->valuestring);
     printf("isDriver = %s\n", isDriver->valuestring);
 
+    ret = curl_to_dataserver_login(username->valuestring, password->valuestring, isDriver->valuestring);
+
+    char *recode = RECODE_OK;
+
     char sessionid[SESSIONID_STR_LEN] = {0};
-    ret = curl_to_dataserver_login(username->valuestring, password->valuestring, isDriver->valuestring, sessionid);
+    if (ret == 0) {
+        //生成sessionid
+        create_sessionid(isDriver->valuestring, sessionid);
+        ret = curl_to_cacheserver_session(username->valuestring, sessionid, ORDER_ID_NONE);
+    }
+
+    if (ret == 0) {
+        //设置key的超时时间
+        ret = curl_to_cacheserver_lifecycle(sessionid, SESSIONID_LIFECYCLE);
+    }
+
 
     //将sessionid存放到缓存数据库中
-    char *response_data = make_reg_login_res_json(ret, sessionid, "login error");
+    char *response_data = make_reg_login_res_json(ret, recode, sessionid, "login error");
 
     cJSON_Delete(root);
     // =========================================================

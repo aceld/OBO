@@ -10,13 +10,14 @@ src = $(wildcard *.c)
 #将当前目录下所有的.c  转换成.o给obj
 obj = $(patsubst %.c, %.o, $(src))
 
+test_redis=./test/test_redis
 
 server=OBO_data_server
 
-target=$(server)
+target=$(server) $(test_redis)
 
 
-ALL:$(target)
+ALL:$(target) 
 
 
 #生成所有的.o文件
@@ -24,7 +25,7 @@ $(obj):%.o:%.c
 	$(CC) -c $< -o $@ $(CPPFLAGS) $(CFLAGS) 
 
 
-#test_main程序
+#OBO_data_server程序
 $(server):  https-server.o \
             https-common.o \
             cJSON.o \
@@ -37,6 +38,14 @@ $(server):  https-server.o \
             deal_persistent.o \
             deal_cache.o \
             make_log.o
+	$(CC) $^ -o $@ $(LIBS)
+
+$(test_redis): cJSON.o \
+            redis_op.o \
+            config.o \
+            util.o \
+            make_log.o \
+            test/test_redis.o
 
 	$(CC) $^ -o $@ $(LIBS)
 

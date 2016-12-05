@@ -29,14 +29,14 @@ int rop_selectdatabase(redisContext *conn, unsigned int db_no)
     /* 选择一个数据库 */
     reply = redisCommand(conn, "select %d", db_no);
     if (reply == NULL) {
-        fprintf(stderr, "[-][GMS_REDIS]Select database %d error!\n", db_no);
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Select database %d error!%s\n", db_no, conn->errstr);
+        fprintf(stderr, "[-][ROP_REDIS]Select database %d error!\n", db_no);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Select database %d error!%s\n", db_no, conn->errstr);
         retn = -1;
         goto END;
     }
 
-    printf("[+][GMS_REDIS]Select database %d SUCCESS!\n", db_no);
-    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][GMS_REDIS]Select database %d SUCCESS!\n", db_no);
+    printf("[+][ROP_REDIS]Select database %d SUCCESS!\n", db_no);
+    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][ROP_REDIS]Select database %d SUCCESS!\n", db_no);
 
 END:
     freeReplyObject(reply);
@@ -62,14 +62,14 @@ int rop_flush_database(redisContext *conn)
 
     reply = redisCommand(conn, "FLUSHDB");
     if (reply == NULL) {
-        fprintf(stderr, "[-][GMS_REDIS]Clear all data error\n");
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Clear all data error\n");
+        fprintf(stderr, "[-][ROP_REDIS]Clear all data error\n");
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Clear all data error\n");
         retn = -1;
         goto END;
     }
 
-    printf("[+][GMS_REDIS]Clear all data!!\n");
-    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][GMS_REDIS]Clear all data!!\n");
+    printf("[+][ROP_REDIS]Clear all data!!\n");
+    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][ROP_REDIS]Clear all data!!\n");
 
 END:
     freeReplyObject(reply);
@@ -98,8 +98,8 @@ int rop_is_key_exist(redisContext *conn, char* key)
     reply = redisCommand(conn, "EXISTS %s", key);
     //rop_test_reply_type(reply);
     if (reply->type != REDIS_REPLY_INTEGER) {
-        fprintf(stderr, "[-][GMS_REDIS]is key exist get wrong type!\n");
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]is key exist get wrong type! %s\n", conn->errstr);
+        fprintf(stderr, "[-][ROP_REDIS]is key exist get wrong type!\n");
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]is key exist get wrong type! %s\n", conn->errstr);
         retn = -1;
         goto END;
     }
@@ -135,8 +135,8 @@ int rop_del_key(redisContext *conn, char *key)
 
     reply = redisCommand(conn, "DEL %s", key);
     if (reply->type != REDIS_REPLY_INTEGER) {
-        fprintf(stderr, "[-][GMS_REDIS] DEL key %s ERROR\n", key);
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS] DEL key %s ERROR %s\n", key, conn->errstr);
+        fprintf(stderr, "[-][ROP_REDIS] DEL key %s ERROR\n", key);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS] DEL key %s ERROR %s\n", key, conn->errstr);
         retn = -1;
         goto END;
     }
@@ -173,8 +173,8 @@ int rop_set_key_lifecycle(redisContext *conn, char *key, time_t delete_time)
 
     reply = redisCommand(conn, "EXPIREAT %s %d", key, delete_time);
     if (reply->type != REDIS_REPLY_INTEGER) {
-        fprintf(stderr, "[-][GMS_REDIS]Set key:%s delete time ERROR!\n", key);
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Set key:%s delete time ERROR! %s\n", key, conn->errstr);
+        fprintf(stderr, "[-][ROP_REDIS]Set key:%s delete time ERROR!\n", key);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Set key:%s delete time ERROR! %s\n", key, conn->errstr);
         retn = -1;
     }
     if (reply->integer == 1) {
@@ -210,8 +210,8 @@ int rop_set_key_lifetime(redisContext *conn, char *key, int second)
 
     reply = redisCommand(conn, "EXPIRE %s %d", key, second);
     if (reply->type != REDIS_REPLY_INTEGER) {
-        fprintf(stderr, "[-][GMS_REDIS]Set key:%s  lifetime ERROR!\n", key);
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Set key:%s lifetime ERROR! %s\n", key, conn->errstr);
+        fprintf(stderr, "[-][ROP_REDIS]Set key:%s  lifetime ERROR!\n", key);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Set key:%s lifetime ERROR! %s\n", key, conn->errstr);
         retn = -1;
     }
     if (reply->integer == 1) {
@@ -246,8 +246,8 @@ void rop_show_keys(redisContext *conn, char* pattern)
 
     reply = redisCommand(conn, "keys %s", pattern);
     if (reply->type != REDIS_REPLY_ARRAY) {
-        fprintf(stderr, "[-][GMS_REDIS]show all keys and data wrong type!\n");
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]show all keys and data wrong type! %s\n", conn->errstr);
+        fprintf(stderr, "[-][ROP_REDIS]show all keys and data wrong type!\n");
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]show all keys and data wrong type! %s\n", conn->errstr);
         goto END;
     }
 
@@ -284,8 +284,8 @@ int rop_redis_append(redisContext *conn, RCOMMANDS cmds, int cmd_num)
     for (i = 0; i < cmd_num; ++i) {
         retn = redisAppendCommand(conn, cmds[i]);
         if (retn != REDIS_OK) {
-            fprintf(stderr, "[-][GMS_REDIS]Append Command: %s ERROR!\n", cmds[i]);
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Append Command: %s ERROR! %s\n", cmds[i], conn->errstr);
+            fprintf(stderr, "[-][ROP_REDIS]Append Command: %s ERROR!\n", cmds[i]);
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Append Command: %s ERROR! %s\n", cmds[i], conn->errstr);
             retn = -1;
             goto END;
         }
@@ -297,8 +297,8 @@ int rop_redis_append(redisContext *conn, RCOMMANDS cmds, int cmd_num)
         retn = redisGetReply(conn, (void**)&reply);
         if (retn != REDIS_OK) {
             retn = -1;
-            fprintf(stderr, "[-][GMS_REDIS]Commit Command:%s ERROR!\n", cmds[i]);
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Commit Command:%s ERROR! %s\n", cmds[i], conn->errstr);
+            fprintf(stderr, "[-][ROP_REDIS]Commit Command:%s ERROR!\n", cmds[i]);
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Commit Command:%s ERROR! %s\n", cmds[i], conn->errstr);
             freeReplyObject(reply);
             break;
         }
@@ -330,7 +330,7 @@ int rop_redis_command(redisContext *conn, char *cmd)
 
     reply = redisCommand(conn, cmd);
     if (reply == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Command : %s ERROR!%s\n", cmd, conn->errstr);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Command : %s ERROR!%s\n", cmd, conn->errstr);
         retn = -1;
     }
 
@@ -351,25 +351,25 @@ void rop_test_reply_type(redisReply *reply)
 {
     switch (reply->type) {
         case REDIS_REPLY_STATUS:
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][GMS_REDIS]=REDIS_REPLY_STATUS=[string] use reply->str to get data, reply->len get data len\n");
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][ROP_REDIS]=REDIS_REPLY_STATUS=[string] use reply->str to get data, reply->len get data len\n");
             break;
         case REDIS_REPLY_ERROR:
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][GMS_REDIS]=REDIS_REPLY_ERROR=[string] use reply->str to get data, reply->len get date len\n");
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][ROP_REDIS]=REDIS_REPLY_ERROR=[string] use reply->str to get data, reply->len get date len\n");
             break;
         case REDIS_REPLY_INTEGER:
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][GMS_REDIS]=REDIS_REPLY_INTEGER=[long long] use reply->integer to get data\n");
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][ROP_REDIS]=REDIS_REPLY_INTEGER=[long long] use reply->integer to get data\n");
             break;
         case REDIS_REPLY_NIL:
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][GMS_REDIS]=REDIS_REPLY_NIL=[] data not exist\n");
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][ROP_REDIS]=REDIS_REPLY_NIL=[] data not exist\n");
             break;
         case REDIS_REPLY_ARRAY:
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][GMS_REDIS]=REDIS_REPLY_ARRAY=[array] use reply->elements to get number of data, reply->element[index] to get (struct redisReply*) Object\n");
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][ROP_REDIS]=REDIS_REPLY_ARRAY=[array] use reply->elements to get number of data, reply->element[index] to get (struct redisReply*) Object\n");
             break;
         case REDIS_REPLY_STRING:
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][GMS_REDIS]=REDIS_REPLY_string=[string] use reply->str to get data, reply->len get data len\n");
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[+][ROP_REDIS]=REDIS_REPLY_string=[string] use reply->str to get data, reply->len get data len\n");
             break;
         default:
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Can't parse this type\n");
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Can't parse this type\n");
             break;
     }
 }
@@ -395,18 +395,18 @@ redisContext* rop_connectdb_nopwd(char *ip_str, char* port_str)
     conn = redisConnect(ip_str, port);
 
     if (conn  == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Connect %s:%d Error:Can't allocate redis context!\n", ip_str, port);		
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Connect %s:%d Error:Can't allocate redis context!\n", ip_str, port);		
         goto END;
     }
 
     if (conn->err) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Connect %s:%d Error:%s\n", ip_str, port, conn->errstr);	
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Connect %s:%d Error:%s\n", ip_str, port, conn->errstr);	
         redisFree(conn);
         conn = NULL;
         goto END;
     }
 
-    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][GMS_REDIS]Connect %s:%d SUCCESS!\n", ip_str, port);
+    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][ROP_REDIS]Connect %s:%d SUCCESS!\n", ip_str, port);
 
 END:
     return conn;
@@ -434,12 +434,12 @@ redisContext* rop_connectdb(char *ip_str, char* port_str, char *pwd)
     conn = redisConnect(ip_str, port);
 
     if (conn  == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Connect %s:%d Error:Can't allocate redis context!\n", ip_str, port);		
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Connect %s:%d Error:Can't allocate redis context!\n", ip_str, port);		
         goto END;
     }
 
     if (conn->err) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Connect %s:%d Error:%s\n", ip_str, port, conn->errstr);	
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Connect %s:%d Error:%s\n", ip_str, port, conn->errstr);	
         redisFree(conn);
         conn = NULL;
         goto END;
@@ -450,14 +450,14 @@ redisContext* rop_connectdb(char *ip_str, char* port_str, char *pwd)
 
     reply = redisCommand(conn, auth_cmd);
     if (reply == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Command : auth %s ERROR!\n", pwd);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Command : auth %s ERROR!\n", pwd);
         conn = NULL;
         goto END;
     }
     freeReplyObject(reply);
 
 
-    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][GMS_REDIS]Connect %s:%d SUCCESS!\n", ip_str, port);
+    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][ROP_REDIS]Connect %s:%d SUCCESS!\n", ip_str, port);
 
 END:
     return conn;
@@ -481,12 +481,12 @@ redisContext* rop_connectdb_unix(char *sock_path, char *pwd)
 
     conn = redisConnectUnix(sock_path);
     if (conn  == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Connect domain-unix:%s Error:Can't allocate redis context!\n", sock_path);		
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Connect domain-unix:%s Error:Can't allocate redis context!\n", sock_path);		
         goto END;
     }
 
     if (conn->err) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Connect domain-unix:%s Error:%s\n", sock_path, conn->errstr);	
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Connect domain-unix:%s Error:%s\n", sock_path, conn->errstr);	
         redisFree(conn);
         conn = NULL;
         goto END;
@@ -496,13 +496,13 @@ redisContext* rop_connectdb_unix(char *sock_path, char *pwd)
     sprintf(auth_cmd, "auth %s", pwd);
     reply = redisCommand(conn, auth_cmd);
     if (reply == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Command : auth %s ERROR!\n", pwd);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Command : auth %s ERROR!\n", pwd);
         conn = NULL;
         goto END;
     }
     freeReplyObject(reply);
 
-    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][GMS_REDIS]Connect domain-unix:%s SUCCESS!\n", sock_path);
+    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][ROP_REDIS]Connect domain-unix:%s SUCCESS!\n", sock_path);
 
 END:
     return conn;
@@ -531,18 +531,18 @@ redisContext* rop_connectdb_timeout(char* ip_str, char *port_str, struct timeval
     conn = redisConnectWithTimeout(ip_str, port, *timeout);
 
     if (conn  == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Connect %s:%d Error:Can't allocate redis context!\n", ip_str, port);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Connect %s:%d Error:Can't allocate redis context!\n", ip_str, port);
         goto END;
     }
 
     if (conn->err) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Connect %s:%d Error:%s\n", ip_str, port, conn->errstr);	
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Connect %s:%d Error:%s\n", ip_str, port, conn->errstr);	
         redisFree(conn);
         conn = NULL;
         goto END;
     }
 
-    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][GMS_REDIS]Connect %s:%d SUCCESS!\n", ip_str, port);
+    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][ROP_REDIS]Connect %s:%d SUCCESS!\n", ip_str, port);
 
 END:
     return conn;
@@ -562,7 +562,7 @@ void rop_disconnect(redisContext* conn)
     }
     redisFree(conn);
 
-    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][GMS_REDIS]Disconnect SUCCESS!\n");
+    LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC,"[+][ROP_REDIS]Disconnect SUCCESS!\n");
 }
 
 /* 封装一个 hmset 命令 */
@@ -640,7 +640,7 @@ END:
 
 /* -------------------------------------------*/
 /**
- * @brief  批量执行链表插入命令 插入链表头部
+ * @brief  批量执行设置hash字段值指令
  *
  * @param conn		已建立好的链接
  * @param key		链表名
@@ -662,7 +662,7 @@ int rop_hash_set_append(redisContext *conn, char *key, RFIELDS fields, RVALUES v
     for (i = 0; i < val_num; ++i) {
         retn = redisAppendCommand(conn, "hset %s %s %s", key, fields[i], values[i]);
         if (retn != REDIS_OK) {
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]HSET %s %s %s ERROR![%s]\n", key, fields[i], values[i], conn->errstr);
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]HSET %s %s %s ERROR![%s]\n", key, fields[i], values[i], conn->errstr);
             retn = -1;
             goto END;
         }
@@ -674,7 +674,7 @@ int rop_hash_set_append(redisContext *conn, char *key, RFIELDS fields, RVALUES v
         retn = redisGetReply(conn, (void**)&reply);
         if (retn != REDIS_OK) {
             retn = -1;
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Commit HSET %s %s %s ERROR![%s]\n", key, fields[i], values[i], conn->errstr);
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Commit HSET %s %s %s ERROR![%s]\n", key, fields[i], values[i], conn->errstr);
             freeReplyObject(reply);
             break;
         }
@@ -684,6 +684,67 @@ int rop_hash_set_append(redisContext *conn, char *key, RFIELDS fields, RVALUES v
 
 END:
     return retn;
+}
+
+
+
+
+/* -------------------------------------------*/
+/**
+ * @brief  批量执行得到hash字段值指令
+ *
+ * @param conn		已建立好的链接
+ * @param key		链表名
+ * @param values	封装好的值数组(out),外部需要分配空间
+ * @param val_num	值个数
+ *
+ * @returns   
+ *			0		succ
+ *			-1		FAIL
+ */
+/* -------------------------------------------*/
+int rop_hash_get_append(redisContext *conn, char *key, RFIELDS fields, RVALUES values, int val_num)
+{
+    int retn = 0;
+    int i = 0;
+    int len = 0;
+    redisReply *reply = NULL;
+
+    /* 批量插入命令到缓冲命令管道 */
+    for (i = 0; i < val_num; ++i) {
+        retn = redisAppendCommand(conn, "hget %s %s", key, fields[i]);
+        if (retn != REDIS_OK) {
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]HGET %s %s ERROR![%s]\n", key, fields[i], conn->errstr);
+            retn = -1;
+            goto END;
+        }
+        retn = 0;
+    }
+
+    /* 提交命令 */
+    for (i = 0; i < val_num; ++i) {
+        retn = redisGetReply(conn, (void**)&reply);
+        if (retn != REDIS_OK) {
+            retn = -1;
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Commit HGET %s %s ERROR![%s]\n", key, fields[i], conn->errstr);
+            freeReplyObject(reply);
+            break;
+        }
+
+        len = reply->len > VALUES_ID_SIZE ? VALUES_ID_SIZE:reply->len ; 
+
+        strncpy(values[i], reply->str, len);
+
+        values[i][len] = '\0';
+
+
+        freeReplyObject(reply);
+        retn = 0;
+    }
+
+END:
+    return retn;
+
 }
 
 
@@ -708,7 +769,7 @@ int rop_hash_set(redisContext *conn, char *key, char *field, char *value)
 
     reply =  redisCommand(conn, "hset %s %s %s", key, field, value);
     if (reply == NULL || reply->type != REDIS_REPLY_INTEGER) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]hset %s %s %s error %s\n", key, field, value,conn->errstr);	
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]hset %s %s %s error %s\n", key, field, value,conn->errstr);	
         retn =  -1;
         goto END;
     }
@@ -743,7 +804,7 @@ int rop_hash_get(redisContext *conn, char *key, char *field, char *value)
 
     reply =  redisCommand(conn, "hget %s %s", key, field);
     if (reply == NULL || reply->type != REDIS_REPLY_STRING) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]hget %s %s  error %s\n", key, field, conn->errstr);	
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]hget %s %s  error %s\n", key, field, conn->errstr);	
         retn =  -1;
         goto END;
     }
@@ -759,6 +820,60 @@ int rop_hash_get(redisContext *conn, char *key, char *field, char *value)
 END:
     freeReplyObject(reply);
 
+
+    return retn;
+}
+
+
+int rop_geo_radius(redisContext *conn, const char *key, const char *longitude, const char *latitude, const char *radius, RGEO *geo_array_p, int *geo_num)
+{
+    int retn = 0;
+
+
+    redisReply *reply = NULL;
+    int i, j = 0;
+
+    reply =  redisCommand(conn, "GEORADIUS %s %s %s %s km WITHDIST WITHCOORD ASC", key, longitude, latitude, radius);
+
+    if (reply == NULL || reply->type != REDIS_REPLY_ARRAY) {
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]georadius %s  error %s\n", key, conn->errstr);	
+        retn =  -1;
+        goto END;
+    }
+
+    RGEO geo_array = NULL;
+    int num = reply->elements;
+    geo_array = malloc(GEO_SIZE * num);
+    memset(geo_array, 0, GEO_SIZE * num);
+
+    for (i = 0;i < num; i++) {
+        redisReply *item_array = reply->element[i];
+
+        for (j = 0;j < item_array->elements; j++) {
+            if (j == 0) {
+                //printf("[GEORADIUS]item name =  [%s]\n", item_array->element[j]->str);
+                strncpy(geo_array[i].name, item_array->element[j]->str, VALUES_ID_SIZE);
+            }
+            else if (j == 1) {
+                //printf("[GEORADIUS]distance =  [%s]\n", item_array->element[j]->str);
+                strncpy(geo_array[i].distance, item_array->element[j]->str, VALUES_ID_SIZE);
+            }
+            else if (j == 2) {
+                redisReply *location = item_array->element[j];
+                //printf("\tlongitude =  [%s]\n", location->element[0]->str);
+                //printf("\tlatitude =  [%s]\n",  location->element[1]->str);
+                strncpy(geo_array[i].longitude, location->element[0]->str, VALUES_ID_SIZE);
+                strncpy(geo_array[i].latitude, location->element[1]->str, VALUES_ID_SIZE);
+            }
+        }
+    }
+
+
+    *geo_num = num;
+    *geo_array_p = geo_array;
+
+END:
+    freeReplyObject(reply);
 
     return retn;
 }
@@ -790,7 +905,7 @@ int rop_create_or_replace_hash_table(redisContext* conn,
 
     char *cmd = make_hmset_command(key, element_num, fields, values);		
     if (cmd == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]create hash table %s error\n", key);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]create hash table %s error\n", key);
         retn = -1;
         goto END_WITHOUT_FREE;
     }
@@ -798,7 +913,7 @@ int rop_create_or_replace_hash_table(redisContext* conn,
     reply = redisCommand(conn, cmd);
     //	rop_test_reply_type(reply);
     if (strcmp(reply->str, "OK") != 0) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Create hash table %s Error:%s,%s\n", key, reply->str, conn->errstr);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Create hash table %s Error:%s,%s\n", key, reply->str, conn->errstr);
 
         retn = -1;
         goto END;
@@ -835,7 +950,7 @@ int rop_hincrement_one_field(redisContext *conn, char *key, char *field, unsigne
 
     reply = redisCommand(conn, "HINCRBY %s %s %d", key, field, num);
     if (reply == NULL) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]increment %s %s error %s\n", key, field, conn->errstr);	
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]increment %s %s error %s\n", key, field, conn->errstr);	
         retn =  -1;
         goto END;
     }
@@ -872,7 +987,7 @@ int rop_list_push_append(redisContext *conn, char *key, RVALUES values, int val_
     for (i = 0; i < val_num; ++i) {
         retn = redisAppendCommand(conn, "lpush %s %s", key, values[i]);
         if (retn != REDIS_OK) {
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]PLUSH %s %s ERROR! %s\n", key, values[i], conn->errstr);
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]PLUSH %s %s ERROR! %s\n", key, values[i], conn->errstr);
             retn = -1;
             goto END;
         }
@@ -884,7 +999,7 @@ int rop_list_push_append(redisContext *conn, char *key, RVALUES values, int val_
         retn = redisGetReply(conn, (void**)&reply);
         if (retn != REDIS_OK) {
             retn = -1;
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Commit LPUSH %s %s ERROR! %s\n", key, values[i], conn->errstr);
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Commit LPUSH %s %s ERROR! %s\n", key, values[i], conn->errstr);
             freeReplyObject(reply);
             break;
         }
@@ -915,7 +1030,7 @@ int rop_list_push(redisContext *conn, char *key, char *value)
     reply = redisCommand(conn, "LPUSH %s %s", key, value);
     //rop_test_reply_type(reply);	
     if (reply->type != REDIS_REPLY_INTEGER) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]LPUSH %s %s error!%s\n", key, value, conn->errstr);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]LPUSH %s %s error!%s\n", key, value, conn->errstr);
         retn = -1;
     }
 
@@ -943,7 +1058,7 @@ int rop_get_list_cnt(redisContext *conn, char *key)
 
     reply = redisCommand(conn, "LLEN %s", key);
     if (reply->type != REDIS_REPLY_INTEGER) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]LLEN %s error %s\n", key, conn->errstr);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]LLEN %s error %s\n", key, conn->errstr);
         cnt = -1;
         goto END;
     }
@@ -982,7 +1097,7 @@ int rop_trim_list(redisContext *conn, char *key, int begin, int end)
 
     reply = redisCommand(conn, "LTRIM %s %d %d", key, begin, end);
     if (reply->type != REDIS_REPLY_STATUS) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]LTRIM %s %d %d error!%s\n", key, begin, end, conn->errstr);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]LTRIM %s %d %d error!%s\n", key, begin, end, conn->errstr);
         retn = -1;
     }
 
@@ -1013,7 +1128,7 @@ int rop_range_list(redisContext *conn, char *key, int from_pos, int count, RVALU
     reply = redisCommand(conn, "LRANGE %s %d %d", key, from_pos, count);
     //    rop_test_reply_type(reply);
     if (reply->type != REDIS_REPLY_ARRAY) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]LRANGE %s  error!%s\n", key, conn->errstr);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]LRANGE %s  error!%s\n", key, conn->errstr);
         retn = -1;
     }
 
@@ -1053,7 +1168,7 @@ int rop_zset_increment(redisContext *conn, char* key, char* member)
     reply = redisCommand(conn, "ZINCRBY %s 1 %s", key, member);
     //rop_test_reply_type(reply);
     if (strcmp(reply->str, "OK") != 0) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Add or increment table: %s,member: %s Error:%s,%s\n", key, member,reply->str, conn->errstr);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Add or increment table: %s,member: %s Error:%s,%s\n", key, member,reply->str, conn->errstr);
 
         retn = -1;
         goto END;
@@ -1089,7 +1204,7 @@ int rop_zset_increment_append(redisContext *conn, char *key, RVALUES values, int
     for (i = 0; i < val_num; ++i) {
         retn = redisAppendCommand(conn, "ZINCRBY %s 1 %s", key, values[i]);
         if (retn != REDIS_OK) {
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]ZINCRBY %s 1 %s ERROR! %s\n", key, values[i], conn->errstr);
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]ZINCRBY %s 1 %s ERROR! %s\n", key, values[i], conn->errstr);
             retn = -1;
             goto END;
         }
@@ -1101,7 +1216,7 @@ int rop_zset_increment_append(redisContext *conn, char *key, RVALUES values, int
         retn = redisGetReply(conn, (void**)&reply);
         if (retn != REDIS_OK) {
             retn = -1;
-            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]Commit ZINCRBY %s 1 %s ERROR!%s\n", key, values[i], conn->errstr);
+            LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]Commit ZINCRBY %s 1 %s ERROR!%s\n", key, values[i], conn->errstr);
             freeReplyObject(reply);
             break;
         }
@@ -1123,7 +1238,7 @@ int rop_zset_get_score(redisContext *conn, char *key, char *member)
     rop_test_reply_type(reply);
 
     if (reply->type != REDIS_REPLY_STRING) {
-        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][GMS_REDIS]ZSCORE %s %s error %s\n", key, member,conn->errstr);
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]ZSCORE %s %s error %s\n", key, member,conn->errstr);
         score = -1;
         goto END;
     }
@@ -1236,3 +1351,4 @@ END:
     freeReplyObject(reply);
     return retn;
 }
+

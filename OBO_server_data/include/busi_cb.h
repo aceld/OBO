@@ -8,7 +8,7 @@ void cache_store_cb (struct evhttp_request *req, void *arg);
 
 
 
-int deal_persistent(char *request_data_buf);
-int deal_cache(char *request_data_buf);
+char* deal_persistent(char *request_data_buf);
+char* deal_cache(char *request_data_buf);
 
 #endif

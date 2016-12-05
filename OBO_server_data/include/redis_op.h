@@ -16,12 +16,25 @@
 #define REDIS_LOG_MODULE          "database"
 #define REDIS_LOG_PROC            "redis"
 
-#define REDIS_COMMAND_SIZE        300            /* redis Command 指令最大长度 */
+#define REDIS_COMMAND_SIZE        300           /* redis Command 指令最大长度 */
 #define FIELD_ID_SIZE            100            /* redis hash表field域字段长度 */
-#define VALUES_ID_SIZE           1024            /* redis        value域字段长度 */
-typedef char (*RCOMMANDS)[REDIS_COMMAND_SIZE];/* redis 存放批量 命令字符串数组类型 */
-typedef char (*RFIELDS)[FIELD_ID_SIZE];        /* redis hash表存放批量field字符串数组类型 */
-typedef char (*RVALUES)[VALUES_ID_SIZE];    /* redis 表存放批量value字符串数组类型 */
+#define VALUES_ID_SIZE           1024           /* redis        value域字段长度 */
+typedef char (*RCOMMANDS)[REDIS_COMMAND_SIZE];  /* redis 存放批量 命令字符串数组类型 */
+typedef char (*RFIELDS)[FIELD_ID_SIZE];         /* redis hash表存放批量field字符串数组类型 */
+typedef char (*RVALUES)[VALUES_ID_SIZE];        /* redis 表存放批量value字符串数组类型 */
+
+typedef struct geo_location
+{
+    char name[VALUES_ID_SIZE];
+    char distance[VALUES_ID_SIZE];
+    char longitude[VALUES_ID_SIZE];
+    char latitude[VALUES_ID_SIZE];
+
+}geo_location_t;
+
+#define GEO_SIZE            sizeof(geo_location_t)
+
+typedef geo_location_t (*RGEO);
 
 
 /* -------------------------------------------*/
@@ -247,6 +260,22 @@ int rop_hincrement_one_field(redisContext *conn, char *key, char *field, unsigne
  */
 /* -------------------------------------------*/
 int rop_hash_set_append(redisContext *conn, char *key, RFIELDS fields, RVALUES values, int val_num);
+
+/* -------------------------------------------*/
+/**
+ * @brief  批量执行得到hash字段值指令
+ *
+ * @param conn		已建立好的链接
+ * @param key		链表名
+ * @param values	封装好的值数组(out),外部需要分配空间
+ * @param val_num	值个数
+ *
+ * @returns   
+ *			0		succ
+ *			-1		FAIL
+ */
+/* -------------------------------------------*/
+int rop_hash_get_append(redisContext *conn, char *key, RFIELDS fields, RVALUES values, int val_num);
 
 /* -------------------------------------------*/
 /**
@@ -481,5 +510,6 @@ int rop_get_string(redisContext *conn, char *key, char *value);
 /* -------------------------------------------*/
 int rop_increment_string(redisContext *conn, char *key, int *get_num);
 
+int rop_geo_radius(redisContext *conn, const char *key, const char *longitude, const char *latitude, const char *radius, RGEO *geo_array_p, int *geo_num);
 
 #endif

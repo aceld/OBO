@@ -24,8 +24,8 @@ $(obj):%.o:%.c
 	$(CC) -c $< -o $@ $(CPPFLAGS) $(CFLAGS) 
 
 
-#test_main程序
-$(server): https-server.o https-common.o cJSON.o login.o reg.o util.o remote_store.o
+#OBO_web_server程序
+$(server): https-server.o https-common.o cJSON.o login.o reg.o util.o remote_store.o set_order.o
 	$(CC) $^ -o $@ $(LIBS)
 
 

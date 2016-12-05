@@ -38,7 +38,6 @@
 
 void cache_store_cb (struct evhttp_request *req, void *arg)
 { 
-    int ret = 0;
     struct evbuffer *evb = NULL;
     const char *uri = evhttp_request_get_uri (req);
     struct evhttp_uri *decoded = NULL;
@@ -88,10 +87,9 @@ void cache_store_cb (struct evhttp_request *req, void *arg)
      */
     //=========================================
 
-    ret = deal_cache(request_data_buf);
-
-    char *response_data = make_response_json(ret, "store cache cmd error");
-
+    char *response_data = NULL;
+    response_data = deal_cache(request_data_buf);
+    //response_data  need free at last
 
     //=========================================
     /* This holds the content we're sending. */
@@ -113,9 +111,10 @@ void cache_store_cb (struct evhttp_request *req, void *arg)
     if (evb)
         evbuffer_free (evb);
 
+    if (response_data != NULL) {
+        printf("[response]:\n");
+        printf("%s\n", response_data);
 
-    printf("[response]:\n");
-    printf("%s\n", response_data);
-
-    free(response_data);
+        free(response_data);
+    }
 }

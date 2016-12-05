@@ -148,8 +148,9 @@ END:
  * @returns   
  */
 /* -------------------------------------------*/
-int deal_persistent(char *request_data_buf)
+char* deal_persistent(char *request_data_buf)
 {
+    char *response_data;
     int ret = 0;
     //unpack json
     cJSON* root     = cJSON_Parse(request_data_buf);
@@ -188,6 +189,8 @@ int deal_persistent(char *request_data_buf)
                                   email->valuestring,
                                   id_card->valuestring,
                                   driver->valuestring);
+
+            response_data = make_response_json(ret, "store OBO_TABLE_USER error");
         }
 
     }
@@ -200,12 +203,14 @@ int deal_persistent(char *request_data_buf)
             cJSON* driver = cJSON_GetObjectItem(root, "driver");
 
             ret = check_username(username->valuestring, password->valuestring, driver->valuestring);
+
+            response_data = make_response_json(ret, "query OBO_TABLE_USER error");
     }
 
 
 
     cJSON_Delete(root);
 
-    return ret;
+    return response_data;
 
 }
