@@ -4,6 +4,12 @@
 #include "cJSON.h"
 #include "busi_cb.h"
 
+void get_time_str( char* time_str )
+{
+    time_t t = time(NULL);
+    strftime( time_str, TIME_STR_LEN, "%Y-%m-%d %X",localtime(&t) );
+}
+
 char *get_random_uuid(char *str)
 {
     uuid_t uuid;
@@ -36,6 +42,33 @@ char * create_sessionid(const char *isDriver, char *sessionid)
     }
 
     return sessionid;
+}
+
+char *make_driver_locationChanged_res_json(int ret, char *recode, char* status, char *orderid, char *reason, char *ptemp_longitude, char *ptemp_latitude)
+{
+    //packet json
+    cJSON *root = cJSON_CreateObject();
+
+    if (ret == 0) {
+        cJSON_AddStringToObject(root, "result", "ok");
+        cJSON_AddStringToObject(root, "status", status);
+        cJSON_AddStringToObject(root, "orderid", orderid);
+        if (strcmp(status, STATUS_DRIVER_CATCH) == 0 ||
+                strcmp(status, STATUS_DRIVER_DRIVE) == 0) {
+            cJSON_AddStringToObject(root, "ptemp_longitude", ptemp_longitude);
+            cJSON_AddStringToObject(root, "ptemp_latitude", ptemp_latitude);
+        }
+    }
+    else {
+        cJSON_AddStringToObject(root, "result", "error");
+        cJSON_AddStringToObject(root, "reason", reason);
+    }
+    cJSON_AddStringToObject(root, "recode", recode);
+
+    char *response_data = cJSON_Print(root);
+    cJSON_Delete(root);
+
+    return response_data;
 }
 
 char *make_gen_res_json(int ret, char* recode, char *reason)

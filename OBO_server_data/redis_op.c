@@ -825,6 +825,62 @@ END:
 }
 
 
+/* -------------------------------------------*/
+/**
+ * @brief  添加地理位置信息(无法覆盖)
+ *
+ * @param conn
+ * @param key
+ * @param member
+ * @param longitude
+ * @param latitude
+ *
+ * @returns   
+ */
+/* -------------------------------------------*/
+int rop_add_geo(redisContext *conn, const char *key, const char *member, const char *longitude, const char *latitude)
+{
+    int retn = 0;
+
+#if 0
+    double longitude_double = atof(longitude);
+    double latitude_double = atof(latitude);
+#endif
+
+    redisReply *reply = NULL;
+
+    reply =  redisCommand(conn, "geoadd %s %s %s %s",key, longitude, latitude, member);
+    if (reply == NULL || reply->type != REDIS_REPLY_INTEGER) {
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]geoadd %s %s %s %s  error %s\n", key, longitude, latitude, member, conn->errstr);	
+        retn =  -1;
+        goto END;
+    }
+
+
+END:
+    freeReplyObject(reply);
+
+
+    return retn;
+    
+}
+
+/* -------------------------------------------*/
+/**
+ * @brief   获得geo周边地理位置数据
+ *
+ * @param conn
+ * @param key
+ * @param longitude
+ * @param latitude
+ * @param radius
+ * @param geo_array_p
+ * @param geo_num
+ *
+ * @returns   
+ *    0 succ, -1 fail
+ */
+/* -------------------------------------------*/
 int rop_geo_radius(redisContext *conn, const char *key, const char *longitude, const char *latitude, const char *radius, RGEO *geo_array_p, int *geo_num)
 {
     int retn = 0;
@@ -1226,6 +1282,38 @@ int rop_zset_increment_append(redisContext *conn, char *key, RVALUES values, int
 
 END: 
     return retn;
+}
+
+
+//删除zset中的一个member
+int rop_zset_rem_member(redisContext *conn, char *key, char *member)
+{
+    int ret = 0;
+
+    redisReply *reply = NULL;
+
+    reply = redisCommand(conn, "ZREM %s %s", key, member);
+    //rop_test_reply_type(reply);
+    if (reply->type != REDIS_REPLY_INTEGER) {
+        LOG(REDIS_LOG_MODULE, REDIS_LOG_PROC, "[-][ROP_REDIS]ZREM %s %s error %s\n", key, member,conn->errstr);
+        goto END;
+    }
+
+    ret = reply->integer;
+
+    if (reply->integer == 1) {
+        //删除成功
+        ret = 0;
+    }
+    else  {
+        //删除失败 或者没有该key
+        ret = 1;
+    }
+
+END:
+    freeReplyObject(reply);
+
+    return ret;
 }
 
 int rop_zset_get_score(redisContext *conn, char *key, char *member)

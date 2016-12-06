@@ -56,10 +56,10 @@ $(test_redis): cJSON.o \
 #clean指令
 
 clean:
-	-rm -rf $(obj) $(target) 
+	-rm -rf $(obj) $(target) ./test/*.o
 
 distclean:
-	-rm -rf $(obj) $(target) 
+	-rm -rf $(obj) $(target) ./test/*.o
 
 #将clean目标 改成一个虚拟符号
 .PHONY: clean ALL distclean

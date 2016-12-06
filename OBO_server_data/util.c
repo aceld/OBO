@@ -67,7 +67,7 @@ char *make_response_json(int ret, char *reason)
 {
 result: "ok",
 recode: "0",
-count : 2,
+count : "2",
 values: ["盖伦", "orderid-xxx-xxx-xxx-xxx"]
 }
 //失败

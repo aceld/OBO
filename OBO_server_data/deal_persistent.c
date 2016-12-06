@@ -55,6 +55,36 @@ static int insert_table_user(char *username, char *password, char *tel,
     return ret;
 }
 
+static int insert_table_order(char *orderid, char *passenger_username, char *driver_username, char *create_order_time, char *start_order_time, char *end_time, char *src_address, char *dst_address, char *src_longitude, char *src_latitude, char *dst_longitude, char *dst_latitude, char *src_address_real, char *dst_address_real, char *src_longitude_real, char *src_latitude_real, char *dst_longitude_real, char *dst_latitude_real, char *RMB)
+{
+    int ret = 0;
+    char query[SQL_MAX_LEN] = {0};
+
+    MYSQL *conn = msql_conn(g_db_config.db_username,
+                            g_db_config.db_passwd,
+                            g_db_config.db_basename);
+    if (conn == NULL) {
+        printf("====== conn mysql error!=====\n");
+        return -1;
+    }
+
+    sprintf(query, 
+            "insert into %s (orderid, passenger_username, driver_username, create_order_time, start_order_time, end_time, src_address, dst_address, src_longitude, src_latitude, dst_longitude, dst_latitude, src_address_real, dst_address_real, src_longitude_real, src_latitude_real, dst_longitude_real, dst_latitude_real, RMB) values ('%s', '%s','%s','%s','%s', '%s', '%s', '%s','%s', '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')", 
+            TABLE_USER , orderid, passenger_username, driver_username, create_order_time, start_order_time, end_time, src_address, dst_address, src_longitude, src_latitude, dst_longitude, dst_latitude, src_address_real, dst_address_real, src_longitude_real, src_latitude_real, dst_longitude_real, dst_latitude_real, RMB);
+
+    if (mysql_query(conn, query)) {
+        printf("query = %s\n", query);
+        printf("==== insert %s error===\n", TABLE_USER);
+        print_error(conn, "insert");
+        ret = -1;
+    }
+
+    mysql_close(conn);
+
+    return ret;
+
+}
+
 static int process_result(MYSQL *conn, MYSQL_RES *res_set, char *pwd)
 {
     MYSQL_ROW row;
@@ -191,6 +221,62 @@ char* deal_persistent(char *request_data_buf)
                                   driver->valuestring);
 
             response_data = make_response_json(ret, "store OBO_TABLE_USER error");
+        }
+
+        else if (strcmp(table->valuestring, TABLE_ORDER) == 0) {
+            printf("insert into %s\n", TABLE_ORDER);
+
+            cJSON* orderid = cJSON_GetObjectItem(root, "orderid");
+            cJSON* passenger_username = cJSON_GetObjectItem(root, "passenger_username");
+            cJSON* driver_username = cJSON_GetObjectItem(root, "driver_username");
+
+            cJSON* create_order_time = cJSON_GetObjectItem(root, "create_order_time");
+            cJSON* start_order_time = cJSON_GetObjectItem(root, "start_order_time");
+            cJSON* end_time = cJSON_GetObjectItem(root, "end_time");
+            
+            cJSON* src_address = cJSON_GetObjectItem(root, "src_address");
+            cJSON* dst_address = cJSON_GetObjectItem(root, "dst_address");
+            cJSON* src_longitude = cJSON_GetObjectItem(root, "src_longitude");
+            cJSON* src_latitude = cJSON_GetObjectItem(root, "src_latitude");
+            cJSON* dst_longitude = cJSON_GetObjectItem(root, "dst_longitude");
+            cJSON* dst_latitude = cJSON_GetObjectItem(root, "dst_latitude");
+
+            cJSON* src_address_real = cJSON_GetObjectItem(root, "src_address_real");
+            cJSON* dst_address_real = cJSON_GetObjectItem(root, "dst_address_real");
+            cJSON* src_longitude_real = cJSON_GetObjectItem(root, "src_longitude_real");
+            cJSON* src_latitude_real = cJSON_GetObjectItem(root, "src_latitude_real");
+            cJSON* dst_longitude_real = cJSON_GetObjectItem(root, "dst_longitude_real");
+            cJSON* dst_latitude_real = cJSON_GetObjectItem(root, "dst_latitude_real");
+
+            cJSON* RMB = cJSON_GetObjectItem(root, "RMB");
+
+
+            ret = insert_table_order(orderid->valuestring,
+                                     passenger_username->valuestring,
+                                     driver_username->valuestring,
+
+                                     create_order_time->valuestring,
+                                     start_order_time->valuestring,
+                                     end_time->valuestring,
+
+                                     src_address->valuestring,
+                                     dst_address->valuestring,
+                                     src_longitude->valuestring,
+                                     src_latitude->valuestring,
+                                     dst_longitude->valuestring,
+                                     dst_latitude->valuestring,
+
+                                     src_address_real->valuestring,
+                                     dst_address_real->valuestring,
+                                     src_longitude_real->valuestring,
+                                     src_latitude_real->valuestring,
+                                     dst_longitude_real->valuestring,
+                                     dst_latitude_real->valuestring,
+
+                                     RMB->valuestring
+                                     );
+
+            response_data = make_response_json(ret, "store OBO_TABLE_ORDER error");
         }
 
     }

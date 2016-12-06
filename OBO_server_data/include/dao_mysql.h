@@ -11,7 +11,7 @@
 #define MYSQL_USER          "root"
 #define MYSQL_PWD           "itcast"
 #define MYSQL_DATABASE      "dstorage"
-#define SQL_MAX_LEN         (512)
+#define SQL_MAX_LEN         (1024)
 
 void print_error(MYSQL *conn, const char *title);
 

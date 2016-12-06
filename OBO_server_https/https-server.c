@@ -153,6 +153,7 @@ static int serve_some_http (void)
     evhttp_set_cb(http, "/login", login_cb, NULL);
     evhttp_set_cb(http, "/reg", reg_cb, NULL);
     evhttp_set_cb(http, "/startSetOrder", set_order_cb, NULL);
+    evhttp_set_cb(http, "/locationChanged", locationChanged_cb, NULL);
 
     /* 设置监听IP和端口 */
     handle = evhttp_bind_socket_with_handle (http, "0.0.0.0", serverPort);

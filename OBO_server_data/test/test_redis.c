@@ -32,8 +32,25 @@ int main(void)
         printf("latitude = %s\n", geo_array[i].latitude);
     }
 #endif
-
     free(geo_array);
+
+
+
+    int array_size = 2;
+
+    RFIELDS rfields  = malloc (FIELD_ID_SIZE *array_size);
+    RVALUES rvalues  = malloc (VALUES_ID_SIZE *array_size);
+
+    strncpy(rfields[0], "name", FIELD_ID_SIZE-1);
+    strncpy(rfields[1], "id", FIELD_ID_SIZE-1);
+
+    ret = rop_hash_get_append(conn, "myhash", rfields, rvalues, array_size);
+
+
+    for (i = 0; i < array_size; i++) {
+        printf("%s\n", rvalues[i]);
+    }
+
 END:
     rop_disconnect(conn);
     return ret;

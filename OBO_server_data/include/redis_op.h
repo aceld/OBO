@@ -329,6 +329,9 @@ int rop_zset_increment(redisContext *conn, char* key, char* member);
 //得到zset一个member的score
 int rop_zset_get_score(redisContext *conn, char *key, char *member);
 
+//删除zset中的一个member
+int rop_zset_rem_member(redisContext *conn, char *key, char *member);
+
 /* -------------------------------------------*/
 /**
  * @brief     批量将指定的zset表，对应的成员，值自增1
@@ -510,6 +513,24 @@ int rop_get_string(redisContext *conn, char *key, char *value);
 /* -------------------------------------------*/
 int rop_increment_string(redisContext *conn, char *key, int *get_num);
 
+/* -------------------------------------------*/
+/**
+ * @brief   获得geo周边地理位置数据
+ *
+ * @param conn
+ * @param key
+ * @param longitude
+ * @param latitude
+ * @param radius
+ * @param geo_array_p
+ * @param geo_num
+ *
+ * @returns   
+ *    0 succ, -1 fail
+ */
+/* -------------------------------------------*/
 int rop_geo_radius(redisContext *conn, const char *key, const char *longitude, const char *latitude, const char *radius, RGEO *geo_array_p, int *geo_num);
+
+int rop_add_geo(redisContext *conn, const char *key, const char *member, const char *longitude, const char *latitude);
 
 #endif
