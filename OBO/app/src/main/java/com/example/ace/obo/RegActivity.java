@@ -116,7 +116,7 @@ public class RegActivity extends AppCompatActivity {
                     }
                     else {
                         Intent intent = new Intent();
-                        intent.setClass(RegActivity.this, MapMainActivity.class);
+                        intent.setClass(RegActivity.this, DriverMapActivity.class);
                         startActivity(intent);
                     }
 

@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else {
                         Intent intent = new Intent();
-                        intent.setClass(MainActivity.this, MapMainActivity.class);
+                        intent.setClass(MainActivity.this, DriverMapActivity.class);
                         startActivity(intent);
                     }
                 }

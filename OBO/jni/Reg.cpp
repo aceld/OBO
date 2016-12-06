@@ -31,9 +31,15 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_Reg
 
     //保存当前角色
     Data::getInstance()->setIsDriver(isDriver);
-
     //设置当前的orderid为空
     Data::getInstance()->setOrderid("NONE");
+    //更新当前角色状态
+    if (jisDriver == JNI_TRUE) {
+        Data::getInstance()->setStatus(OBO_STATUS_DRIVER_IDLE);
+    }
+    else {
+        Data::getInstance()->setStatus(OBO_STATUS_PASSNGER_IDLE);
+    }
 
     /*
      * 给服务端的协议   https://ip:port/reg [json_data]

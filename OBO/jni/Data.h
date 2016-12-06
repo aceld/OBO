@@ -61,6 +61,34 @@ public:
         return this->status;
     }
 
+    void set_ptemp_location(string longitude, string latitude)
+    {
+        this->ptemp_longitude = longitude;
+        this->ptemp_latitude = latitude;
+    }
+
+    string get_ptemp_longitude() {
+        return this->ptemp_longitude;
+    }
+
+    string get_ptemp_latitude() {
+        return this->ptemp_latitude;
+    }
+
+    void set_dtemp_location(string longitude, string latitude)
+    {
+        this->dtemp_longitude = longitude;
+        this->dtemp_latitude = latitude;
+    }
+
+    string get_dtemp_longitude() {
+        return this->dtemp_longitude;
+    }
+
+    string get_dtemp_latitude() {
+        return this->dtemp_latitude;
+    }
+
 private:
     static Data *instance;
 
@@ -76,6 +104,15 @@ private:
     //当前用户的状态
     string status; //如果是司机 具有如下赋值:["idle","ready","catching","driving"]
                    //如果是乘客 具有如下赋值:["idle","waiting","traveling"]
+
+
+    //乘客当前坐标：供driving和catching状态的司机使用
+    string ptemp_longitude;
+    string ptemp_latitude;
+
+    //司机当前坐标，供waiting和traveling的乘客使用
+    string dtemp_longitude;
+    string dtemp_latitude;
 };
 
 

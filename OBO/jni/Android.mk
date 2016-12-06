@@ -25,7 +25,9 @@ LOCAL_MODULE := OBOjni
 LOCAL_SRC_FILES := Login.cpp Reg.cpp \
                    cJSON.cpp curlTest.cpp \
                    Json.cpp Curl.cpp \
-                   Data.cpp StartOrder.cpp
+                   Data.cpp StartOrder.cpp \
+                   DriverLocationChanged.cpp \
+                   FinishOrder.cpp
 # 添加其他动态库
 LOCAL_LDLIBS := -llog -lz
 # 添加依赖的静态库

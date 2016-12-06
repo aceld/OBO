@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">OBO</string>
+
+    <string name="DRIVER_STATUS_READY">ready</string>
+    <string name="DRIVER_STATUS_IDLE">idle</string>
+    <string name="DRIVER_STATUS_CATCH">catching</string>
+    <string name="DRIVER_STATUS_DRIVE">driving</string>
+
+    <string name="PASSENGER_STATUS_IDLE">idle</string>
+    <string name="PASSENGER_STATUS_WAIT">waiting</string>
+    <string name="PASSENGER_STATUS_TRAVEL">traveling</string>
+
+    <string name="DRIVER_BUTTON_STATUS_IDLE">bt_idle</string>
+    <string name="DRIVER_BUTTON_STATUS_READY">bt_ready</string>
+    <string name="DRIVER_BUTTON_STATUS_CATCHING">bt_catching</string>
+    <string name="DRIVER_BUTTON_STATUS_DRIVE">bt_driving</string>
+
+
+
 </resources>

@@ -41,10 +41,24 @@ public class OBOJni {
                                      String dst_address,
                                      String RMB);
 
+    //司机端定位发生改变，上传地理位置信息 JNI模块
+    public native  boolean DriverLocationChanged(String longitude,
+                                                 String latitude,
+                                                 String address,
+                                                 String autoSend);
+
+    public native boolean FinishOrder();
+
+    public native void setStatus(String status);
+
     public native String getOrderid();
     public native String getSessionid();
     public native String getStatus();
     public native String getIsDriver();
+    public native String getPtempLongitude();
+    public native String getPtempLatitude();
+    public native String getDtempLongitude();
+    public native String getDtempLatitude();
 
     public native void testLibcurl();
     

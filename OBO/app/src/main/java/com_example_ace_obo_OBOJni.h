@@ -33,6 +33,30 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_StartOrder
 
 /*
  * Class:     com_example_ace_obo_OBOJni
+ * Method:    DriverLocationChanged
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_DriverLocationChanged
+  (JNIEnv *, jobject, jstring, jstring, jstring, jstring);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    FinishOrder
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_FinishOrder
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    setStatus
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_example_ace_obo_OBOJni_setStatus
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
  * Method:    getOrderid
  * Signature: ()Ljava/lang/String;
  */
@@ -61,6 +85,38 @@ JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getStatus
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getIsDriver
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    getPtempLongitude
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getPtempLongitude
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    getPtempLatitude
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getPtempLatitude
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    getDtempLongitude
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getDtempLongitude
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
+ * Method:    getDtempLatitude
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_ace_obo_OBOJni_getDtempLatitude
   (JNIEnv *, jobject);
 
 /*

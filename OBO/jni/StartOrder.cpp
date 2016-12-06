@@ -5,8 +5,7 @@
 #include "Json.h"
 #include "Curl.h"
 #include "Data.h"
-#include <time.h>
-#include <stdio.h>
+
 
 void get_time_str( char* time_str )
 {

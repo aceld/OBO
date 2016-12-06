@@ -385,8 +385,7 @@ public class PassengerMapActivity extends AppCompatActivity {
         /*--- 4 启动定位---*/
         _amapLocationClient.startLocation();
     }
-
-        /*--------------  定位接口操作（end） ------------ */
+    /*--------------  定位接口操作（end） ------------ */
 
 
     void setAutoCompleteAddress() {
