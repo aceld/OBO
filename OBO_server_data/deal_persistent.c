@@ -70,7 +70,7 @@ static int insert_table_order(char *orderid, char *passenger_username, char *dri
 
     sprintf(query, 
             "insert into %s (orderid, passenger_username, driver_username, create_order_time, start_order_time, end_time, src_address, dst_address, src_longitude, src_latitude, dst_longitude, dst_latitude, src_address_real, dst_address_real, src_longitude_real, src_latitude_real, dst_longitude_real, dst_latitude_real, RMB) values ('%s', '%s','%s','%s','%s', '%s', '%s', '%s','%s', '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')", 
-            TABLE_USER , orderid, passenger_username, driver_username, create_order_time, start_order_time, end_time, src_address, dst_address, src_longitude, src_latitude, dst_longitude, dst_latitude, src_address_real, dst_address_real, src_longitude_real, src_latitude_real, dst_longitude_real, dst_latitude_real, RMB);
+            TABLE_ORDER , orderid, passenger_username, driver_username, create_order_time, start_order_time, end_time, src_address, dst_address, src_longitude, src_latitude, dst_longitude, dst_latitude, src_address_real, dst_address_real, src_longitude_real, src_latitude_real, dst_longitude_real, dst_latitude_real, RMB);
 
     if (mysql_query(conn, query)) {
         printf("query = %s\n", query);
