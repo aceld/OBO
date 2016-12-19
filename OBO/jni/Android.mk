@@ -27,6 +27,7 @@ LOCAL_SRC_FILES := Login.cpp Reg.cpp \
                    Json.cpp Curl.cpp \
                    Data.cpp StartOrder.cpp \
                    DriverLocationChanged.cpp \
+                   PassengerLocationChanged.cpp \
                    FinishOrder.cpp
 # 添加其他动态库
 LOCAL_LDLIBS := -llog -lz

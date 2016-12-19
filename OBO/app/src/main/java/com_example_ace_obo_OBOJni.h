@@ -41,6 +41,14 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_DriverLocationChanged
 
 /*
  * Class:     com_example_ace_obo_OBOJni
+ * Method:    PassengerLocationChanged
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_PassengerLocationChanged
+  (JNIEnv *, jobject, jstring, jstring, jstring, jstring, jstring, jstring);
+
+/*
+ * Class:     com_example_ace_obo_OBOJni
  * Method:    FinishOrder
  * Signature: ()Z
  */

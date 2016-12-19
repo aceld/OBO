@@ -15,6 +15,8 @@
     <string name="DRIVER_BUTTON_STATUS_CATCHING">bt_catching</string>
     <string name="DRIVER_BUTTON_STATUS_DRIVE">bt_driving</string>
 
-
+    <string name="PASSENGER_BUTTON_STATUS_IDLE">bt_idle</string>
+    <string name="PASSENGER_BUTTON_STATUS_WAIT">bt_waiting</string>
+    <string name="PASSENGER_BUTTON_STATUS_TRAVEL">bt_traveling</string>
 
 </resources>

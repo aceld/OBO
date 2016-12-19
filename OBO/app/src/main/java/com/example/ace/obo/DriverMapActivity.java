@@ -100,10 +100,11 @@ public class DriverMapActivity extends AppCompatActivity {
                 }
                 else if (_bt_status.toString().equals(getResources().getString(R.string.DRIVER_BUTTON_STATUS_CATCHING))) {
                     //说明已经有乘客上车
-                    _autoSend = "yes";
 
                     //更变司机为driving状态
                     OBOJni.getInstence().setStatus(getResources().getString(R.string.DRIVER_STATUS_DRIVE));
+                    _autoSend = "yes";
+
                     _bt_status = getResources().getString(R.string.DRIVER_BUTTON_STATUS_DRIVE);
                     _bt_getOrder.setText("已抵达目的地");
 
@@ -112,6 +113,7 @@ public class DriverMapActivity extends AppCompatActivity {
                     //说明乘客已抵达目的地
 
                     //生成最终订单 完成订单
+
                     OBOJni.getInstence().FinishOrder();
 
                     //更变司机为idle状态
@@ -120,10 +122,6 @@ public class DriverMapActivity extends AppCompatActivity {
                     _bt_getOrder.setText("开始接单");
                 }
 
-
-                    if(_autoSend.equals("yes")) {
-                    _autoSend = "no";
-                }
             }
         });
     }
@@ -190,9 +188,14 @@ public class DriverMapActivity extends AppCompatActivity {
 
                         //开始上传司机地理位置信息 locationChanged业务
                         OBOJni.getInstence().DriverLocationChanged(aMapLocation.getLongitude()+"",
-                                                                   aMapLocation.getLatitude()+"",
-                                                                   aMapLocation.getAddress()+"",
-                                                                   _autoSend);
+                                aMapLocation.getLatitude()+"",
+                                aMapLocation.getAddress()+"",
+                                _autoSend);
+
+
+                        if (_autoSend.equals("yes") == true) {
+                            _autoSend = "no";
+                        }
 
                         if (OBOJni.getInstence().getStatus().equals(getResources().getString(R.string.DRIVER_STATUS_DRIVE)) ||
                                 OBOJni.getInstence().getStatus().equals(getResources().getString(R.string.DRIVER_STATUS_CATCH))) {
@@ -200,6 +203,8 @@ public class DriverMapActivity extends AppCompatActivity {
                             Log.e("Amap", "ptemp_longitude = " + OBOJni.getInstence().getPtempLongitude());
                             Log.e("Amap", "ptemp_latitude = " + OBOJni.getInstence().getPtempLatitude());
                         }
+
+
 
                         else if (OBOJni.getInstence().getStatus().toString().equals(getResources().getString(R.string.DRIVER_STATUS_READY)) &&
                             !OBOJni.getInstence().getOrderid().toString().equals("NONE")) {
@@ -253,4 +258,29 @@ public class DriverMapActivity extends AppCompatActivity {
     }
     /*--------------  定位接口操作（end） ------------ */
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        _mapView.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        _mapView.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        _mapView.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        _mapView.onSaveInstanceState(outState);
+    }
 }

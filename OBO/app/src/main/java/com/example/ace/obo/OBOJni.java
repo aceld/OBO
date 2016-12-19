@@ -47,6 +47,14 @@ public class OBOJni {
                                                  String address,
                                                  String autoSend);
 
+    //乘客端定位发生改变，上传地理位置信息 JNI模块
+    public native  boolean PassengerLocationChanged(String longitude,
+                                                    String latitude,
+                                                    String address,
+                                                    String dst_longitude,
+                                                    String dst_latitude,
+                                                    String dst_address);
+
     public native boolean FinishOrder();
 
     public native void setStatus(String status);
