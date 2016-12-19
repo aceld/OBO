@@ -78,7 +78,7 @@ void finish_order_cb (struct evhttp_request *req, void *arg)
     int post_data_len = evbuffer_get_length(buf);
     char request_data_buf[4096] = {0};
     memcpy(request_data_buf, payload, post_data_len);
-    printf("[post_data][%d]=\n %s\n", post_data_len, payload);
+    printf("[post_data][%d]=\n%s\n", post_data_len, payload);
 
 
     /*
@@ -96,25 +96,23 @@ void finish_order_cb (struct evhttp_request *req, void *arg)
     printf("orderid = %s\n", orderid->valuestring);
 
     char* recode = RECODE_OK;
-    order_t *order_info = malloc(sizeof(order_t));
-    memset(order_info, 0, sizeof(order_t));
+    order_t *order_info = malloc(ORDER_INFO_LEN);
+    memset(order_info, 0, ORDER_INFO_LEN);
 
     char passenger_sessionid[SESSIONID_STR_LEN] = {0};
     char driver_sessionid[SESSIONID_STR_LEN] = {0};
-    char passenger_username[USERNAME_STR_LEN] = {0};
-    char driver_username[USERNAME_STR_LEN] = {0};
 
     //得到订单信息
     ret = curl_to_cacheserver_get_orderd(orderid->valuestring, passenger_sessionid, driver_sessionid, order_info);
 
     if (ret == 0) {
         //根据passenger_sessionid 得到乘客用户名      
-        ret = curl_to_cacheserver_get_username(passenger_sessionid, passenger_username);
+        ret = curl_to_cacheserver_get_username(passenger_sessionid, order_info->passenger_username);
     }
 
     if (ret == 0) {
         //根据driver_sessionid 得到司机用户名      
-        ret = curl_to_cacheserver_get_username(driver_sessionid, driver_username);
+        ret = curl_to_cacheserver_get_username(driver_sessionid, order_info->driver_username);
     }
 
     if (ret == 0) {

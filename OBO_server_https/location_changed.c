@@ -96,10 +96,9 @@ void locationChanged_cb (struct evhttp_request *req, void *arg)
     cJSON* longitude = cJSON_GetObjectItem(root, "longitude");
     cJSON* latitude = cJSON_GetObjectItem(root, "latitude");
     cJSON* address = cJSON_GetObjectItem(root, "address");
-    cJSON* autosend = cJSON_GetObjectItem(root, "autosend");
 
     if (strcmp(driver->valuestring, "no") == 0 &&
-        strcmp(status->valuestring, STATUS_PASSENGER_WAIT)) {
+        strcmp(status->valuestring, STATUS_PASSENGER_WAIT) == 0) {
         cJSON* dst_longitude = cJSON_GetObjectItem(root, "dst_longitude");
         cJSON* dst_latitude = cJSON_GetObjectItem(root, "dst_latitude");
         cJSON* dst_address = cJSON_GetObjectItem(root, "dst_address");
@@ -116,7 +115,6 @@ void locationChanged_cb (struct evhttp_request *req, void *arg)
     printf("longitude= %s\n",longitude->valuestring);
     printf("latitude= %s\n", latitude->valuestring);
     printf("address = %s\n", address->valuestring);
-    printf("autosend= %s\n", autosend->valuestring);
 
     char orderid[ORDERID_STR_LEN] = {0};
     char* recode = RECODE_OK;
@@ -149,6 +147,8 @@ void locationChanged_cb (struct evhttp_request *req, void *arg)
 
         if (strcmp(driver->valuestring, "yes") == 0) {
             //===========司机分支==============//
+            cJSON* autosend = cJSON_GetObjectItem(root, "autosend");
+            printf("autosend= %s\n", autosend->valuestring);
             
             char ptemp_longitude[LOCATION_POINT_STR_LEN] = {0};
             char ptemp_latitude[LOCATION_POINT_STR_LEN] = {0};
@@ -205,17 +205,41 @@ void locationChanged_cb (struct evhttp_request *req, void *arg)
             response_data = make_driver_locationChanged_res_json(ret, recode, status->valuestring, orderid, "Driver LocationChanged error", ptemp_longitude, ptemp_latitude);
             goto END;
         }
+
         else if (strcmp(driver->valuestring, "no") == 0) {
             //=============乘客分支==============//
+
+            char dtemp_longitude[LOCATION_POINT_STR_LEN] = {0};
+            char dtemp_latitude[LOCATION_POINT_STR_LEN] = {0};
+            char order_status[ORDERID_STR_LEN] = {0};
+
             if (strcmp(status->valuestring, STATUS_PASSENGER_TRAVEL) == 0) {
                 //traveling状态业务
+                //更新自己当前的坐标信息到临时订单
+                curl_to_cacheserver_set_ptemp_location(orderid, longitude->valuestring, latitude->valuestring);
+
+                //得到当前临时订单中的司机的 最新坐标地址
+                curl_to_cacheserver_get_dtemp_location(orderid, dtemp_longitude, dtemp_latitude);
+
             }
             else if (strcmp(status->valuestring, STATUS_PASSENGER_IDLE) == 0) {
                 //idle 状态业务
             }
             else if (strcmp(status->valuestring, STATUS_PASSENGER_WAIT) == 0) {
                 //waiting状态 业务
+
+                //更新自己当前的坐标信息到临时订单
+                curl_to_cacheserver_set_ptemp_location(orderid, longitude->valuestring, latitude->valuestring);
+
+                //得到当前临时订单中的司机的 最新坐标地址
+                curl_to_cacheserver_get_dtemp_location(orderid, dtemp_longitude, dtemp_latitude);
+
+                //得到当前临时订单中的 订单状态 
+                curl_to_cacheserver_get_order_status(orderid, order_status);
             }
+
+            response_data = make_passenger_locationChanged_res_json(ret, recode, status->valuestring, orderid, "Passenger LocationChanged error", dtemp_longitude, dtemp_latitude, order_status);
+            goto END;
         }
 
     }

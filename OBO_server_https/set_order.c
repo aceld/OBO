@@ -100,6 +100,7 @@ void set_order_cb (struct evhttp_request *req, void *arg)
     cJSON* create_order_time = cJSON_GetObjectItem(root, "create_order_time");
     
 
+#if 1
     printf("sessionid = %s\n", sessionid->valuestring);
     printf("driver = %s\n", driver->valuestring);
     printf("src_longitude= %s\n", src_longitude->valuestring);
@@ -110,6 +111,7 @@ void set_order_cb (struct evhttp_request *req, void *arg)
     printf("dst_address = %s\n", dst_address->valuestring);
     printf("RMB= %s\n", RMB->valuestring);
     printf("create_order_time = %s\n", create_order_time->valuestring);
+#endif
 
     geo_drvier_t *drivers = NULL;
     int driver_count = 0;

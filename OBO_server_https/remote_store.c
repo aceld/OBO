@@ -1209,6 +1209,7 @@ END:
     return ret;
 }
 
+
 /* -------------------------------------------*/
 /**
  * @brief  设置当前乘客的临时坐标地址信息
@@ -1448,6 +1449,87 @@ int curl_to_cacheserver_get_ptemp_location(const char *orderid, char *ptemp_long
         }
         else {
             printf("get ptemp location error, unknow reason, res_data=%s\n", res_data.data);
+        }
+
+        ret = -1;
+
+    }
+    cJSON_Delete(res_root);
+
+END:
+    return ret;
+}
+
+/* -------------------------------------------*/
+/**
+ * @brief  获取当前临时订单中的 订单状态
+ *
+ * @param orderid
+ * @param order_status   OUT
+ *
+ * @returns   
+ */
+/* -------------------------------------------*/
+int curl_to_cacheserver_get_order_status(const char *orderid, char *order_status)
+{
+    int ret = 0;
+
+    cJSON* request_json = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(request_json, "cmd", "getHash");
+    cJSON_AddStringToObject(request_json, "key", orderid);
+
+    cJSON* fields = cJSON_CreateArray();
+    cJSON_AddItemToArray(fields, cJSON_CreateString("order_status"));
+
+    cJSON_AddItemToObject(request_json, "fields", fields);
+
+
+    char * request_json_str = cJSON_Print(request_json);
+    curl_response_data_t res_data;
+    memset(&res_data, 0, sizeof(res_data));
+
+
+    if (curl_send(URI_DATA_SERVER_CHE, request_json_str,  &res_data, 1) != 0) {
+        ret = -1;
+        goto END;
+    }
+
+    cJSON_Delete(request_json);
+    free(request_json_str);
+
+
+    cJSON *res_root = cJSON_Parse(res_data.data);
+
+    cJSON *result = cJSON_GetObjectItem(res_root, "result");
+    if (result && (strcmp(result->valuestring, "ok") == 0)) {
+        //succ
+        printf("get dtemp location succ\n");
+
+        cJSON *count = cJSON_GetObjectItem(res_root, "count");
+        if (count && (count->valueint >= 0)) {
+
+            cJSON *values = cJSON_GetObjectItem(res_root, "values");
+            int i = 0;
+
+            for (i = 0; i < count->valueint; i++) {
+                if (i == 0) {
+                    //order_status
+                    cJSON *order_status_obj = cJSON_GetArrayItem(values, i);
+                    strncpy(order_status, order_status_obj->valuestring, ORDERID_STR_LEN);
+                }
+            }
+        }
+
+    }
+    else {
+        //fail
+        cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
+        if (reason) {
+            printf("get dtemp location error, reason = %s\n", reason->valuestring);
+        }
+        else {
+            printf("get dtemp location error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;

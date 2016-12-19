@@ -65,6 +65,7 @@ char * create_orderid(char *orderid);
 char *make_reg_login_res_json(int ret, char* recode, char *sessionid, char *reason);
 char *make_gen_res_json(int ret, char* recode, char *reason);
 char *make_driver_locationChanged_res_json(int ret, char *recode, char* status, char *orderid, char *reason, char *ptemp_longitude, char *ptemp_latitude);
+char *make_passenger_locationChanged_res_json(int ret, char *recode, char* status, char *orderid, char *reason, char *dtemp_longitude, char *dtemp_latitude, char *order_status);
 
 typedef struct geo_drvier
 {
@@ -102,6 +103,8 @@ typedef struct order
     char RMB[64];
 
 }order_t;
+
+#define ORDER_INFO_LEN      sizeof(struct order)
 
 
 void login_cb (struct evhttp_request *req, void *arg);
@@ -395,6 +398,18 @@ int curl_to_cacheserver_get_ptemp_location(const char *orderid, char *ptemp_long
  */
 /* -------------------------------------------*/
 int curl_to_cacheserver_get_orderd ( const char *orderid, char*passenger_sessionid, char *driver_sessionid, order_t *order_info);
+
+/* -------------------------------------------*/
+/**
+ * @brief  获取当前临时订单中的 订单状态
+ *
+ * @param orderid
+ * @param order_status   OUT
+ *
+ * @returns   
+ */
+/* -------------------------------------------*/
+int curl_to_cacheserver_get_order_status(const char *orderid, char *order_status);
 
 /* -------------------------------------------*/
 /**
