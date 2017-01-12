@@ -71,6 +71,7 @@ public class PassengerMapActivity extends AppCompatActivity {
 
     //是否有司机接单
     private boolean _driverGet = false;
+    private String bt_status = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,15 +109,22 @@ public class PassengerMapActivity extends AppCompatActivity {
         bt_startOrder = (Button)findViewById(R.id.bt_startOrder);
         tv_passenger_info = (TextView)findViewById(R.id.tv_passgener_info);
 
+        bt_status = getString(R.string.PASSENGER_BUTTON_STATUS_IDLE);
+
         bt_startOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                _finalAddr = autotv_finalAddr.getText().toString().trim();
-                if (_finalAddr == null) {
-                    return;
+
+                if (OBOJni.getInstence().getStatus().toString().equals(getString(R.string.DRIVER_STATUS_IDLE))) {
+                    _finalAddr = autotv_finalAddr.getText().toString().trim();
+                    if (_finalAddr == null) {
+                        return;
+                    }
+
+                    doSearchPoi(_finalAddr);
+
                 }
 
-                doSearchPoi(_finalAddr);
             }
         });
 
@@ -240,9 +248,6 @@ public class PassengerMapActivity extends AppCompatActivity {
                         tv_passenger_info.setText("约"+driveRouteResult.getTaxiCost()+" 元");
                        // drivePath.getDuration(); //时间
 
-
-
-                        //发送订单消息
                         bt_startOrder.setText("等待司机接单...");
 
                         //给服务器发送请求下单消息
@@ -254,10 +259,7 @@ public class PassengerMapActivity extends AppCompatActivity {
                                                         _finalAddr,
                                                         driveRouteResult.getTaxiCost()+"");
 
-                        if (_driverGet == false) {
-                            bt_startOrder.setText("暂无司机接单...");
-                            bt_startOrder.setText("开始约车");
-                        }
+
                         Log.e("PassgerMap", "StartOrder: longitude:"+_startPoint.getLongitude() +", latitude:"+_startPoint.getLatitude());
                     }
 
@@ -369,8 +371,45 @@ public class PassengerMapActivity extends AppCompatActivity {
 
 
                         //开始上传乘客地理位置信息 locationChanged业务
+                        if (OBOJni.getInstence().getStatus().toString().equals(getResources().getString(R.string.PASSENGER_STATUS_WAIT))) {
 
-                    } else {
+                            OBOJni.getInstence().PassengerLocationChanged(aMapLocation.getLongitude()+"",
+                                                                          aMapLocation.getLatitude()+"",
+                                                                          aMapLocation.getAddress()+"",
+                                                                          _endPoint.getLongitude()+"",
+                                                                          _endPoint.getLatitude()+"",
+                                                                          _finalAddr);
+                            _driverGet = false;
+                        }
+                        else {
+
+                            OBOJni.getInstence().PassengerLocationChanged(aMapLocation.getLongitude()+"",
+                                    aMapLocation.getLatitude()+"",
+                                    aMapLocation.getAddress()+"",
+                                    "",
+                                    "",
+                                    "");
+                        }
+
+                        //设置乘客按钮文本
+                        if(OBOJni.getInstence().getStatus().toString().equals(getString(R.string.PASSENGER_STATUS_IDLE))) {
+                            if (_driverGet == false) {
+                                bt_startOrder.setText("开始约车");
+                            }
+                            else {
+                                bt_startOrder.setText("等待司机接单...");
+                            }
+                        }
+                        else if (OBOJni.getInstence().getStatus().toString().equals(getString(R.string.PASSENGER_STATUS_WAIT))) {
+                            bt_startOrder.setText("司机已经接单,等待司机...");
+                        }
+                        else if (OBOJni.getInstence().getStatus().toString().equals(getString(R.string.PASSENGER_STATUS_TRAVEL))) {
+                            bt_startOrder.setText("司机已确认上车,正在行驶中...");
+                        }
+
+
+
+                        } else {
                         //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                         Log.e("Amap", "location Error, ErrCode:"
                                 + aMapLocation.getErrorCode() + ", errInfo:"
@@ -466,5 +505,30 @@ public class PassengerMapActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        _mapView.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        _mapView.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        _mapView.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        _mapView.onSaveInstanceState(outState);
     }
 }

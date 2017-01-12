@@ -41,7 +41,10 @@ public class DriverMapActivity extends AppCompatActivity {
 
     //ui
     private Button _bt_getOrder = null;
+    //司机自己的位置覆盖物
     private Marker _locationMarker = null;
+    //已经接单的乘客覆盖物
+    private Marker _passengerMarker = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,10 +103,11 @@ public class DriverMapActivity extends AppCompatActivity {
                 }
                 else if (_bt_status.toString().equals(getResources().getString(R.string.DRIVER_BUTTON_STATUS_CATCHING))) {
                     //说明已经有乘客上车
-                    _autoSend = "yes";
 
                     //更变司机为driving状态
                     OBOJni.getInstence().setStatus(getResources().getString(R.string.DRIVER_STATUS_DRIVE));
+                    _autoSend = "yes";
+
                     _bt_status = getResources().getString(R.string.DRIVER_BUTTON_STATUS_DRIVE);
                     _bt_getOrder.setText("已抵达目的地");
 
@@ -112,6 +116,7 @@ public class DriverMapActivity extends AppCompatActivity {
                     //说明乘客已抵达目的地
 
                     //生成最终订单 完成订单
+
                     OBOJni.getInstence().FinishOrder();
 
                     //更变司机为idle状态
@@ -120,12 +125,43 @@ public class DriverMapActivity extends AppCompatActivity {
                     _bt_getOrder.setText("开始接单");
                 }
 
-
-                    if(_autoSend.equals("yes")) {
-                    _autoSend = "no";
-                }
             }
         });
+    }
+
+
+    //在指定坐标添加一个 覆盖物 图标
+    public void addDriverMakerToMap( double latitude, double longitude)
+    {
+        //添加Marker显示定位位置
+        if (_locationMarker == null) {
+            //如果是空的添加一个新的,icon方法就是设置定位图标，可以自定义
+            _locationMarker = _amap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker)));
+            Log.e("Amap", "首次添加Drivermarker. 到 "+ latitude+", "+longitude);
+        } else {
+            //已经添加过了，修改位置即可
+            _locationMarker.setPosition(new LatLng(latitude, longitude));
+            Log.e("Amap", "重新设置Drivermarker位置 到 "+ latitude+", "+longitude);
+        }
+    }
+
+    //在指定坐标添加一个 覆盖物 图标
+    public void addPassengerMakerToMap( double latitude, double longitude)
+    {
+        //添加Marker显示定位位置
+        if (_passengerMarker == null) {
+            //如果是空的添加一个新的,icon方法就是设置定位图标，可以自定义
+            _passengerMarker = _amap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker)));
+            Log.e("Amap", "首次添加PassengerMarker. 到 "+ latitude+", "+longitude);
+        } else {
+            //已经添加过了，修改位置即可
+            _passengerMarker.setPosition(new LatLng(latitude, longitude));
+            Log.e("Amap", "重新设置PassengerMarker位置 到 "+ latitude+", "+longitude);
+        }
     }
 
     // ============ 开启定位服务接口 ============
@@ -167,6 +203,7 @@ public class DriverMapActivity extends AppCompatActivity {
                         LatLng latLng = new LatLng(aMapLocation.getLatitude(),
                                 aMapLocation.getLongitude());
 
+                        /*
                         //添加Marker显示定位位置
                         if (_locationMarker == null) {
                             //如果是空的添加一个新的,icon方法就是设置定位图标，可以自定义
@@ -177,6 +214,8 @@ public class DriverMapActivity extends AppCompatActivity {
                             //已经添加过了，修改位置即可
                             _locationMarker.setPosition(latLng);
                         }
+                        */
+                        addDriverMakerToMap(aMapLocation.getLatitude(),aMapLocation.getLongitude());
 
                         // 以自我为中心 只执行一次
                         if (_postMyLocationCenter == true) {
@@ -190,16 +229,28 @@ public class DriverMapActivity extends AppCompatActivity {
 
                         //开始上传司机地理位置信息 locationChanged业务
                         OBOJni.getInstence().DriverLocationChanged(aMapLocation.getLongitude()+"",
-                                                                   aMapLocation.getLatitude()+"",
-                                                                   aMapLocation.getAddress()+"",
-                                                                   _autoSend);
+                                aMapLocation.getLatitude()+"",
+                                aMapLocation.getAddress()+"",
+                                _autoSend);
+
+
+                        if (_autoSend.equals("yes") == true) {
+                            _autoSend = "no";
+                        }
 
                         if (OBOJni.getInstence().getStatus().equals(getResources().getString(R.string.DRIVER_STATUS_DRIVE)) ||
                                 OBOJni.getInstence().getStatus().equals(getResources().getString(R.string.DRIVER_STATUS_CATCH))) {
                             //正在拉客，或者 寻找乘客， 可以得到乘客坐标地址
+
                             Log.e("Amap", "ptemp_longitude = " + OBOJni.getInstence().getPtempLongitude());
                             Log.e("Amap", "ptemp_latitude = " + OBOJni.getInstence().getPtempLatitude());
+
+                            //将乘客的坐标地址临时添加覆盖物
+                            addPassengerMakerToMap(Double.parseDouble(OBOJni.getInstence().getPtempLatitude()),
+                                         Double.parseDouble(OBOJni.getInstence().getPtempLongitude()));
                         }
+
+
 
                         else if (OBOJni.getInstence().getStatus().toString().equals(getResources().getString(R.string.DRIVER_STATUS_READY)) &&
                             !OBOJni.getInstence().getOrderid().toString().equals("NONE")) {
@@ -253,4 +304,29 @@ public class DriverMapActivity extends AppCompatActivity {
     }
     /*--------------  定位接口操作（end） ------------ */
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        _mapView.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        _mapView.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        _mapView.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        _mapView.onSaveInstanceState(outState);
+    }
 }

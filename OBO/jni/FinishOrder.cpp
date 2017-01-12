@@ -21,6 +21,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_ace_obo_OBOJni_FinishOrder
     */
     Json json;
 
+
     json.insert("sessionid", Data::getInstance()->getSessionid().c_str());
     json.insert("orderid", Data::getInstance()->getOrderid().c_str());
 
