@@ -60,7 +60,7 @@ static int curl_send(const char *uri, const char* request_json_str, curl_respons
     //提交请求给数据服务器
     CURLcode code = curl_easy_perform(curl);
     if (code != CURLE_OK) {
-        printf("curl easy perform error code = %d\n", code);
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "curl easy perform error code = %d\n", code);
         return -1;
     }
 
@@ -117,7 +117,7 @@ int curl_to_dataserver_reg(const char* username,
 
     if (curl_send(URI_DATA_SERVER_PER,request_json_str,  &res_data, 1) != 0) {
         ret = -1;
-        printf("curl send error\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "curl send error\n");
         goto END;
     }
     cJSON_Delete(request_json);
@@ -129,16 +129,16 @@ int curl_to_dataserver_reg(const char* username,
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("store reg succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "store reg succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("reg store error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "reg store error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("reg store  error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "reg store  error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -188,7 +188,7 @@ int curl_to_dataserver_login(const char *username,
 
     if (curl_send(URI_DATA_SERVER_PER, request_json_str,  &res_data, 1) != 0) {
         ret = -1;
-        printf("curl send error\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "curl_to_dataserver_login send error, %s, %s, %s\n", username, password, isDriver);
         goto END;
     }
     cJSON_Delete(request_json);
@@ -199,17 +199,17 @@ int curl_to_dataserver_login(const char *username,
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("query login succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "query login succ\n");
         ret = 0;
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("query login, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "query login, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("query  login, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL,"query  login, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -275,7 +275,7 @@ int curl_to_dataserver_create_order(order_t *order)
 
     if (curl_send(URI_DATA_SERVER_PER,request_json_str,  &res_data, 1) != 0) {
         ret = -1;
-        printf("curl send error\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "curl send error\n");
         goto END;
     }
     cJSON_Delete(request_json);
@@ -287,16 +287,16 @@ int curl_to_dataserver_create_order(order_t *order)
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("create order succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "create order succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("create order error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "create order error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("create order  error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "create order  error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -395,7 +395,7 @@ int curl_to_cacheserver_radiusGeo(const char *key, const char *longitude, const 
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("get radius geo  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get radius geo  succ\n");
 
         cJSON *count = cJSON_GetObjectItem(res_root, "count");
         if (count && (count->valueint >= 0)) {
@@ -425,10 +425,10 @@ int curl_to_cacheserver_radiusGeo(const char *key, const char *longitude, const 
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("set session error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("set session error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -487,7 +487,7 @@ int curl_to_cacheserver_existsessionid(const char *sessionid)
 
     if (curl_send(URI_DATA_SERVER_CHE, request_json_str,  &res_data, 1) != 0) {
         ret = -1;
-        printf("curl send error\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "curl send error\n");
         goto END;
     }
     cJSON_Delete(request_json);
@@ -500,16 +500,16 @@ int curl_to_cacheserver_existsessionid(const char *sessionid)
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("exist key   succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "exist key   succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("exist  key error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "exist  key error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("exist key error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "exist key error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -568,7 +568,7 @@ reason: "why...."
 
     if (curl_send(URI_DATA_SERVER_CHE, request_json_str,  &res_data, 1) != 0) {
         ret = -1;
-        printf("curl send error\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "curl send error\n");
         goto END;
     }
     cJSON_Delete(request_json);
@@ -581,16 +581,16 @@ reason: "why...."
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("set lifecycle  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set lifecycle  succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("set lifecycle error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set lifecycle error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("set lifecycle error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set lifecycle error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -619,7 +619,7 @@ int curl_to_cacheserver_session(const char *username,  const char* sessionid, co
 {
     int ret = 0;
 
-    printf("sessionid = %s, username  = %s\n", sessionid, username);
+    LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "sessionid = %s, username  = %s\n", sessionid, username);
 
     /*
        ====给服务端的协议====   
@@ -681,16 +681,16 @@ reason: "why...."
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("set session  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session  succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("set session error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("set session error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -774,16 +774,16 @@ int curl_to_cacheserver_create_order(const char *orderid,
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("set session  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session  succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("create order error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "create order error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("create order error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "create order error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -856,16 +856,16 @@ int curl_to_cacheserver_startorder_real(char *orderid, char *order_status, char 
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("start order real  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "start order real  succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("start  order real error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "start  order real error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("start order real, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "start order real, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -946,7 +946,7 @@ int curl_to_cacheserver_get_orderid (const char *sessionid, char *orderid)
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("get orderid   succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get orderid   succ\n");
 
         cJSON *count = cJSON_GetObjectItem(res_root, "count");
         if (count && (count->valueint >= 0)) {
@@ -967,10 +967,10 @@ int curl_to_cacheserver_get_orderid (const char *sessionid, char *orderid)
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("set session error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("set session error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1022,16 +1022,16 @@ int curl_to_cacheserver_remGeo(const char *sessionid)
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("remZset succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "remZset succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("remZset error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "remZset error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("remZset error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "remZset error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1111,16 +1111,16 @@ int curl_to_cacheserver_addGeo(const char *sessionid, const char *longitude, con
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("add Geo succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "add Geo succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("add Geo error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "add Geo error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("add Geo error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "add Geo error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1186,16 +1186,16 @@ int curl_to_cacheserver_set_dtemp_location(const char *orderid, const char *dtem
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("set dtemp location  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set dtemp location  succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("set dtemp location error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set dtemp location error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("set dtemp location , unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set dtemp location , unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1261,16 +1261,16 @@ int curl_to_cacheserver_set_ptemp_location(const char *orderid, const char *ptem
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("set ptemp location  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set ptemp location  succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("set ptemp location error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set ptemp location error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("set ptemp location , unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set ptemp location , unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1330,7 +1330,7 @@ int curl_to_cacheserver_get_dtemp_location(const char *orderid, char *dtemp_long
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("get dtemp location succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get dtemp location succ\n");
 
         cJSON *count = cJSON_GetObjectItem(res_root, "count");
         if (count && (count->valueint >= 0)) {
@@ -1357,10 +1357,10 @@ int curl_to_cacheserver_get_dtemp_location(const char *orderid, char *dtemp_long
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("get dtemp location error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get dtemp location error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("get dtemp location error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get dtemp location error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1418,7 +1418,7 @@ int curl_to_cacheserver_get_ptemp_location(const char *orderid, char *ptemp_long
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("get ptemp location succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get ptemp location succ\n");
 
         cJSON *count = cJSON_GetObjectItem(res_root, "count");
         if (count && (count->valueint >= 0)) {
@@ -1445,10 +1445,10 @@ int curl_to_cacheserver_get_ptemp_location(const char *orderid, char *ptemp_long
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("get ptemp location error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get ptemp location error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("get ptemp location error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get ptemp location error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1504,7 +1504,7 @@ int curl_to_cacheserver_get_order_status(const char *orderid, char *order_status
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("get dtemp location succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get dtemp location succ\n");
 
         cJSON *count = cJSON_GetObjectItem(res_root, "count");
         if (count && (count->valueint >= 0)) {
@@ -1526,10 +1526,10 @@ int curl_to_cacheserver_get_order_status(const char *orderid, char *order_status
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("get dtemp location error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get dtemp location error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("get dtemp location error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get dtemp location error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1580,16 +1580,16 @@ int curl_to_cacheserver_delete_key(const char *key)
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("delete key  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "delete key  succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("delete key error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "delete key error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("delete key error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "delete key error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1652,16 +1652,16 @@ int curl_to_cacheserver_set_orderid (const char *sessionid,
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("set session  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set session  succ\n");
     }
     else {
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("set order error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set order error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("set order error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "set order error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1718,7 +1718,7 @@ int curl_to_cacheserver_get_username(const char *sessionid, char *username)
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("get username succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get username succ\n");
 
         cJSON *count = cJSON_GetObjectItem(res_root, "count");
         if (count && (count->valueint >= 0)) {
@@ -1740,10 +1740,10 @@ int curl_to_cacheserver_get_username(const char *sessionid, char *username)
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("get username error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get username error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("get username error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get username error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;
@@ -1823,7 +1823,7 @@ int curl_to_cacheserver_get_orderd ( const char *orderid, char*passenger_session
     cJSON *result = cJSON_GetObjectItem(res_root, "result");
     if (result && (strcmp(result->valuestring, "ok") == 0)) {
         //succ
-        printf("get order info  succ\n");
+        LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get order info  succ\n");
 
         //orderid
         strncpy(order_info->orderid, orderid, ORDERID_STR_LEN);
@@ -1934,10 +1934,10 @@ int curl_to_cacheserver_get_orderd ( const char *orderid, char*passenger_session
         //fail
         cJSON *reason = cJSON_GetObjectItem(res_root, "reason");
         if (reason) {
-            printf("get order info  error, reason = %s\n", reason->valuestring);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get order info  error, reason = %s\n", reason->valuestring);
         }
         else {
-            printf("get order info error, unknow reason, res_data=%s\n", res_data.data);
+            LOG(LOG_MODULE, LOG_PROC_REMOTE_CURL, "get order info error, unknow reason, res_data=%s\n", res_data.data);
         }
 
         ret = -1;

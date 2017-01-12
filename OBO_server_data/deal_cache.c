@@ -24,12 +24,12 @@ int deal_cache_setLifecycle(cJSON *root)
         cJSON* key          = cJSON_GetObjectItem(root, "key");
         cJSON* lifecycle    = cJSON_GetObjectItem(root, "lifecycle");
         
-        printf("key = %s, lifecycle = %d\n", key->valuestring, lifecycle->valueint);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "key = %s, lifecycle = %d\n", key->valuestring, lifecycle->valueint);
 
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -52,15 +52,15 @@ int deal_cache_setString(cJSON *root)
         cJSON* value    = cJSON_GetObjectItem(root, "value");
         cJSON* unlimited= cJSON_GetObjectItem(root, "unlimited");
 
-        printf("key = %s\n", key->valuestring);
-        printf("value = %s\n", value->valuestring);
-        printf("unlimited = %s\n", unlimited->valuestring);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "key = %s\n", key->valuestring);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "value = %s\n", value->valuestring);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "unlimited = %s\n", unlimited->valuestring);
 
 
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -71,7 +71,7 @@ int deal_cache_setString(cJSON *root)
 
         if (strcmp(unlimited->valuestring, "no") == 0) {
             cJSON* lifecycle= cJSON_GetObjectItem(root, "lifecycle");
-            printf("lifecycle = %d\n", lifecycle->valueint);
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "lifecycle = %d\n", lifecycle->valueint);
             //给该key设置声明周期
             rop_set_key_lifetime(conn, key->valuestring, lifecycle->valueint);
         }
@@ -97,12 +97,12 @@ int deal_cache_existKey(cJSON *root)
 
         cJSON* key          = cJSON_GetObjectItem(root, "key");
         
-        printf("key = %s\n", key->valuestring);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "key = %s\n", key->valuestring);
 
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -155,7 +155,7 @@ int deal_cache_setHash(cJSON *root)
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -203,7 +203,7 @@ int deal_cache_getHash(cJSON *root, RVALUES *rvalues_p, int *value_num_p)
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -212,7 +212,7 @@ int deal_cache_getHash(cJSON *root, RVALUES *rvalues_p, int *value_num_p)
         ret = rop_hash_get_append(conn, key->valuestring, rfields, rvalues, array_size);
 
         for(i = 0; i < array_size; i++) {
-            printf("=====> field : %s, value: %s\n", rfields[i], rvalues[i]);
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "=====> field : %s, value: %s\n", rfields[i], rvalues[i]);
         }
         
         *rvalues_p = rvalues;
@@ -253,7 +253,7 @@ int deal_cache_radiusGeo(cJSON *root, RGEO *geo_array_p, int *geo_num_p)
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -292,7 +292,7 @@ int deal_cache_remZset(cJSON *root)
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -337,7 +337,7 @@ int deal_cache_addGeo(cJSON *root)
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -373,7 +373,7 @@ int deal_cache_deleteKey(cJSON *root)
         redisContext* conn = rop_connectdb_nopwd(g_db_config.cache_ip,
                                                  g_db_config.cache_port);
         if (conn == NULL) {
-            printf("redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "redis connect error %s:%s\n", g_db_config.cache_ip, g_db_config.cache_port); 
             ret = -1;
             goto END;
         
@@ -398,7 +398,7 @@ char * deal_cache(const char *request_data_buf)
     cJSON* root     = cJSON_Parse(request_data_buf);
     cJSON* cmd      = cJSON_GetObjectItem(root, "cmd");
 
-    printf("cmd = %s\n", cmd->valuestring);
+    LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "cmd = %s\n", cmd->valuestring);
     //入库redis数据库
     if (strcmp(cmd->valuestring, KEY_CMD_SETSTRING) == 0) {
         //设置 String类型的 key-value键值对

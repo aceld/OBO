@@ -54,7 +54,7 @@ persistent_store_cb (struct evhttp_request *req, void *arg)
         if (buf == NULL) return;
         evbuffer_add_printf(buf, "Requested: %s\n", uri);
         evhttp_send_reply(req, HTTP_OK, "OK", buf);
-        printf("get uri:%s\n", uri);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "get uri:%s\n", uri);
         return;
     }
 
@@ -65,13 +65,13 @@ persistent_store_cb (struct evhttp_request *req, void *arg)
         return;
     }
 
-    printf ("Got a POST request for <%s>\n", uri);
+    LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "Got a POST request for <%s>\n", uri);
 
     //判断此URI是否合法
     decoded = evhttp_uri_parse (uri);
     if (! decoded)
     { 
-        printf ("It's not a good URI. Sending BADREQUEST\n");
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "It's not a good URI. Sending BADREQUEST\n");
         evhttp_send_error (req, HTTP_BADREQUEST, 0);
         return;
     }
@@ -83,7 +83,7 @@ persistent_store_cb (struct evhttp_request *req, void *arg)
     int post_data_len = evbuffer_get_length(buf);
     char request_data_buf[4096] = {0};
     memcpy(request_data_buf, payload, post_data_len);
-    printf("[post_data][%d]=\n %s\n", post_data_len, payload);
+    LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "[post_data][%d]=\n %s\n", post_data_len, payload);
 
 
     /*
@@ -117,8 +117,8 @@ persistent_store_cb (struct evhttp_request *req, void *arg)
 
 
     if (response_data != NULL) {
-        printf("[response]:\n");
-        printf("%s\n", response_data);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "[response]:\n");
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "%s\n", response_data);
 
         free(response_data);
     }

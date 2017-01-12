@@ -32,6 +32,7 @@
 #include "https-common.h"
 #include "busi_cb.h"
 #include "util.h"
+#include "make_log.h"
 
 
 
@@ -50,6 +51,7 @@ void cache_store_cb (struct evhttp_request *req, void *arg)
         evbuffer_add_printf(buf, "Requested: %s\n", uri);
         evhttp_send_reply(req, HTTP_OK, "OK", buf);
         printf("get uri:%s\n", uri);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "get uri:%s\n", uri);
         return;
     }
 
@@ -60,13 +62,13 @@ void cache_store_cb (struct evhttp_request *req, void *arg)
         return;
     }
 
-    printf ("Got a POST request for <%s>\n", uri);
+    LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "Got a POST request for <%s>\n", uri);
 
     //判断此URI是否合法
     decoded = evhttp_uri_parse (uri);
     if (! decoded)
     { 
-        printf ("It's not a good URI. Sending BADREQUEST\n");
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "It's not a good URI. Sending BADREQUEST\n");
         evhttp_send_error (req, HTTP_BADREQUEST, 0);
         return;
     }
@@ -78,7 +80,7 @@ void cache_store_cb (struct evhttp_request *req, void *arg)
     int post_data_len = evbuffer_get_length(buf);
     char request_data_buf[4096] = {0};
     memcpy(request_data_buf, payload, post_data_len);
-    printf("[post_data][%d]=\n %s\n", post_data_len, payload);
+    LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "[post_data][%d]=\n %s\n", post_data_len, payload);
 
 
     /*
@@ -112,8 +114,8 @@ void cache_store_cb (struct evhttp_request *req, void *arg)
         evbuffer_free (evb);
 
     if (response_data != NULL) {
-        printf("[response]:\n");
-        printf("%s\n", response_data);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "[response]:\n");
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_CACHE, "%s\n", response_data);
 
         free(response_data);
     }

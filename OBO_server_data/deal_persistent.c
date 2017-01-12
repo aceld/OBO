@@ -36,6 +36,7 @@ static int insert_table_user(char *username, char *password, char *tel,
                             g_db_config.db_basename);
     if (conn == NULL) {
         printf("====== conn mysql error!=====\n");
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "====== conn mysql error!=====\n");
         return -1;
     }
 
@@ -46,6 +47,8 @@ static int insert_table_user(char *username, char *password, char *tel,
     if (mysql_query(conn, query)) {
         printf("query = %s\n", query);
         printf("==== insert %s error===\n", TABLE_USER);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "query = %s\n", query);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "==== insert %s error===\n", TABLE_USER);
         print_error(conn, "insert");
         ret = -1;
     }
@@ -65,6 +68,7 @@ static int insert_table_order(char *orderid, char *passenger_username, char *dri
                             g_db_config.db_basename);
     if (conn == NULL) {
         printf("====== conn mysql error!=====\n");
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "====== conn mysql error!=====\n");
         return -1;
     }
 
@@ -75,6 +79,8 @@ static int insert_table_order(char *orderid, char *passenger_username, char *dri
     if (mysql_query(conn, query)) {
         printf("query = %s\n", query);
         printf("==== insert %s error===\n", TABLE_USER);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "query = %s\n", query);
+        LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "==== insert %s error===\n", TABLE_USER);
         print_error(conn, "insert");
         ret = -1;
     }
@@ -194,6 +200,7 @@ char* deal_persistent(char *request_data_buf)
         if (strcmp(table->valuestring, TABLE_USER) == 0) {
 
             printf("insert into %s\n", TABLE_USER);
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "insert into %s\n", TABLE_USER);
 
             cJSON* username = cJSON_GetObjectItem(root, "username");
             cJSON* password = cJSON_GetObjectItem(root, "password");
@@ -225,6 +232,7 @@ char* deal_persistent(char *request_data_buf)
 
         else if (strcmp(table->valuestring, TABLE_ORDER) == 0) {
             printf("insert into %s\n", TABLE_ORDER);
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "insert into %s\n", TABLE_ORDER);
 
             cJSON* orderid = cJSON_GetObjectItem(root, "orderid");
             cJSON* passenger_username = cJSON_GetObjectItem(root, "passenger_username");
@@ -283,6 +291,7 @@ char* deal_persistent(char *request_data_buf)
     else if (strcmp(cmd->valuestring, TABLE_CMD_QUERY) == 0) {
 
             printf("query from %s\n", TABLE_USER);
+            LOG(LOG_MODULE_SERVER_DATA, LOG_PROC_PERSISTENT, "query from %s\n", TABLE_USER);
 
             cJSON* username = cJSON_GetObjectItem(root, "username");
             cJSON* password = cJSON_GetObjectItem(root, "password");

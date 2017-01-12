@@ -50,6 +50,7 @@ void finish_order_cb (struct evhttp_request *req, void *arg)
         evbuffer_add_printf(buf, "Requested: %s\n", uri);
         evhttp_send_reply(req, HTTP_OK, "OK", buf);
         printf("get uri:%s\n", uri);
+        LOG(LOG_MODULE, LOG_PROC_FINISHORDER, "get uri:%s\n", uri);
         return;
     }
 
@@ -61,12 +62,14 @@ void finish_order_cb (struct evhttp_request *req, void *arg)
     }
 
     printf ("Got a POST request for <%s>\n", uri);
+    LOG(LOG_MODULE, LOG_PROC_FINISHORDER, "Got a POST request for <%s>\n", uri);
 
     //判断此URI是否合法
     decoded = evhttp_uri_parse (uri);
     if (! decoded)
     { 
         printf ("It's not a good URI. Sending BADREQUEST\n");
+        LOG(LOG_MODULE, LOG_PROC_FINISHORDER, "It's not a good URI. Sending BADREQUEST\n");
         evhttp_send_error (req, HTTP_BADREQUEST, 0);
         return;
     }
@@ -79,6 +82,7 @@ void finish_order_cb (struct evhttp_request *req, void *arg)
     char request_data_buf[4096] = {0};
     memcpy(request_data_buf, payload, post_data_len);
     printf("[post_data][%d]=\n%s\n", post_data_len, payload);
+    LOG(LOG_MODULE, LOG_PROC_FINISHORDER, "[post_data][%d]=\n%s\n", post_data_len, payload);
 
 
     /*
@@ -163,6 +167,8 @@ void finish_order_cb (struct evhttp_request *req, void *arg)
 
     printf("[response]:\n");
     printf("%s\n", response_data);
+    LOG(LOG_MODULE, LOG_PROC_FINISHORDER, "[response]:\n");
+    LOG(LOG_MODULE, LOG_PROC_FINISHORDER, "%s\n", response_data);
 
     free(response_data);
 }

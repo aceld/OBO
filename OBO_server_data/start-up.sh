@@ -7,4 +7,4 @@ redis-server ./conf/redis.conf
 
 
 #启动web服务器
-./OBO_data_server 18889
+./OBO_data_server 18889 &

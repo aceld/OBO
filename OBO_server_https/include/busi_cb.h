@@ -14,6 +14,7 @@
 
 
 #include <uuid/uuid.h>
+#include "make_log.h"
 
 #define TIME_STR_LEN                    (32)
 #define UUID_STR_LEN                    (36)
@@ -47,6 +48,13 @@
 #define STATUS_PASSENGER_IDLE           "idle"
 #define STATUS_PASSENGER_WAIT           "waiting"
 #define STATUS_PASSENGER_TRAVEL           "traveling"
+
+#define LOG_MODULE                      "OBO_BUSI"
+#define LOG_PROC_LOGIN                  "login"
+#define LOG_PROC_REG                    "login"
+#define LOG_PROC_SETORDER               "set_order"
+#define LOG_PROC_FINISHORDER            "finish_order"
+#define LOG_PROC_REMOTE_CURL            "remote_curl"
 
 typedef struct curl_response_data
 {

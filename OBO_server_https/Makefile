@@ -25,7 +25,7 @@ $(obj):%.o:%.c
 
 
 #OBO_web_server程序
-$(server): https-server.o https-common.o cJSON.o login.o reg.o util.o remote_store.o set_order.o location_changed.o finish_order.o
+$(server): https-server.o https-common.o cJSON.o login.o reg.o util.o remote_store.o set_order.o location_changed.o finish_order.o make_log.o
 	$(CC) $^ -o $@ $(LIBS)
 
 
